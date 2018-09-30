@@ -146,6 +146,7 @@ function magicalities.register_crystal(element, description, color)
 		use_texture_alpha = true,
 		mesh = "crystal.obj",
 		paramtype = "light",
+		paramtype2 = "wallmounted",
 		drawtype = "mesh",
 		light_source = 4,
 		_element = element,
@@ -206,16 +207,19 @@ function magicalities.register_crystal(element, description, color)
 		sounds = default.node_sound_glass_defaults(),
 	})
 
-	-- Crystal clusters as ores
-	minetest.register_ore({
-		ore_type       = "scatter",
-		ore            = "magicalities:crystal_cluster_"..element,
-		wherein        = "default:stone",
-		clust_scarcity = 19 * 19 * 19,
-		clust_num_ores = 1,
-		clust_size     = 1,
-		y_max          = -30,
-		y_min          = -31000,
+	-- Register cave crystal appearances
+	minetest.register_decoration({
+		deco_type = "simple",
+		place_on  = "default:stone",
+		sidelen   = 16,
+
+		y_max = -30,
+		y_min = -31000,
+		flags = "all_floors, all_ceilings",
+
+		fill_ratio = 0.0008,
+
+		decoration = "magicalities:crystal_cluster_"..element,
 	})
 
 	minetest.register_craft({
@@ -278,3 +282,17 @@ minetest.register_abm({
 		end 
 	end
 })
+
+minetest.register_on_generated(function (minp, maxp)
+	local clusters = minetest.find_nodes_in_area(minp, maxp, "group:crystal_cluster")
+	for _, pos in pairs(clusters) do
+		local stone = minetest.find_node_near(pos, 1, "default:stone")
+		if stone then
+			local param2 = minetest.dir_to_wallmounted(vector.direction(pos, stone))
+
+			local node = minetest.get_node(pos)
+			node.param2 = param2
+			minetest.set_node(pos, node)
+		end
+	end
+end)

@@ -3,10 +3,10 @@ magicalities.arcane = {}
 magicalities.arcane.recipes = {}
 
 local fmspecelems = {
-	["earth"] = {3, 0.15},
+	["earth"] = {2.98, 0.15},
 	["water"] = {1, 1},
 	["air"]   = {5, 1},
-	["fire"]  = {3, 4.85},
+	["fire"]  = {2.98, 4.85},
 	["light"] = {1, 4},
 	["dark"]  = {5, 4}
 }
