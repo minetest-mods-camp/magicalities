@@ -212,13 +212,21 @@ function magicalities.register_crystal(element, description, color)
 		deco_type = "simple",
 		place_on  = "default:stone",
 		sidelen   = 16,
-
 		y_max = -30,
 		y_min = -31000,
-		flags = "all_floors, all_ceilings",
+		flags = "all_ceilings",
+		fill_ratio = 0.0004,
+		decoration = "magicalities:crystal_cluster_"..element,
+	})
 
-		fill_ratio = 0.0008,
-
+	minetest.register_decoration({
+		deco_type = "simple",
+		place_on  = "default:stone",
+		sidelen   = 16,
+		y_max = -30,
+		y_min = -31000,
+		flags = "all_floors",
+		fill_ratio = 0.0004,
 		decoration = "magicalities:crystal_cluster_"..element,
 	})
 
