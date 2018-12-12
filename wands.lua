@@ -13,8 +13,6 @@ local wandcaps = {
 	damage_groups = {fleshy = 2},
 }
 
-local randparticles = PcgRandom(os.clock())
-
 local function align(len)
 	local str = ""
 	for i = 1, len do
@@ -48,8 +46,10 @@ local function focuses_formspec(available, focusname)
 	local x   = 0
 	local fsp = ""
 	for focus in pairs(available) do
-		fsp = fsp .. "item_image_button["..x..",2.8;1,1;"..focus..";"..focus..";]"
-		x = x + 1
+		if x < 5 then
+			fsp = fsp .. "item_image_button["..x..",2.8;1,1;"..focus..";"..focus..";]"
+			x = x + 1
+		end
 	end
 
 	local current = ""
@@ -279,39 +279,6 @@ local function use_wand(itemstack, user, pointed_thing)
 
 			return itemstack
 		end
-	end
-
-	-- Calculate velocity
-	local dir = user:get_look_dir()
-	local vel = {x=0,y=0,z=0}
-	vel.x = dir.x * 16
-	vel.y = dir.y * 16
-	vel.z = dir.z * 16
-
-	-- Calculate position
-	local pos = user:get_pos()
-	pos.x = pos.x + (dir.x * 2)
-	pos.y = pos.y + (dir.y * 2) + 1.5
-	pos.z = pos.z + (dir.z * 2)
-
-	for i = 1, 16 do
-		-- Deviation
-		local relvel = {x=0,y=0,z=0}
-		relvel.x = vel.x + (randparticles:next((-i/2.5) * 1000, (i/2.5) * 1000) / 1000)
-		relvel.y = vel.y + (randparticles:next((-i/2.5) * 1000, (i/2.5) * 1000) / 1000)
-		relvel.z = vel.z + (randparticles:next((-i/2.5) * 1000, (i/2.5) * 1000) / 1000)
-		minetest.add_particle({
-			pos = pos,
-			velocity = relvel,
-			acceleration = relvel,
-			expirationtime = 1,
-			size = 4,
-			collisiondetection = true,
-			collision_removal = true,
-			texture = "magicalities_spark.png",
-		--	animation = {Tile Animation definition},
-			glow = 2
-		})
 	end
 
 	magicalities.wands.update_wand_desc(itemstack)
