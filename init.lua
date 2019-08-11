@@ -28,6 +28,9 @@ dofile(modpath.."/focuses.lua")
 -- Tables
 dofile(modpath.."/table.lua")
 
+-- Nodes
+dofile(modpath.."/nodes.lua")
+
 -- Items
 dofile(modpath.."/craftitems.lua")
 

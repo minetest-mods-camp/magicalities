@@ -2,8 +2,9 @@
 
 magicalities.wands = {}
 
-local transform_recipes = {
-	["mg_table"] = {result = "magicalities:arcane_table", requirements = nil}
+magicalities.wands.transform_recipes = {
+	["enchanted_table"] = {result = "magicalities:arcane_table", requirements = nil},
+	["tree"]     = {result = "magicalities:tree_enchanted", requirements = nil}
 }
 
 local wandcaps = {
@@ -77,25 +78,15 @@ function magicalities.wands.update_wand_desc(stack)
 	local wanddata    = minetest.registered_items[stack:get_name()]
 	local description = wanddata.description
 	local capcontents = wanddata["_cap_max"] or 15
-	local strbld      = description.."\n"
-
-	local longest_desc = 0
-	for _,data in pairs(magicalities.elements) do
-		if not data.inheritance then
-			local len = #data.description
-			if len > longest_desc then
-				longest_desc = len
-			end
-		end
-	end
+	local strbld      = description.."\n\n"
 
 	local elems = {}
 	for elem, amount in pairs(data_table) do
 		local dataelem = magicalities.elements[elem]
 		if amount > 0 then
-			elems[#elems + 1] = minetest.colorize(dataelem.color, dataelem.description.." ")..
-								align(longest_desc * 2 - #dataelem.description)..
-								amount.."/"..capcontents
+			if amount < 10 then amount = "0"..amount end
+			elems[#elems + 1] = "["..amount.."/"..capcontents.."] "..
+				minetest.colorize(dataelem.color, dataelem.description)
 		end
 	end
 
@@ -105,7 +96,7 @@ function magicalities.wands.update_wand_desc(stack)
 		focusstr = def.description
 	end
 
-	strbld = strbld .. focusstr
+	strbld = strbld .. minetest.colorize("#5716ad", focusstr) .. "\n"
 	if #elems > 0 then
 		table.sort(elems)
 		strbld = strbld .. "\n" .. table.concat(elems, "\n")
@@ -218,7 +209,7 @@ local function wand_action(itemstack, placer, pointed_thing)
 
 	-- Replacement
 	local to_replace = nil
-	for grp, result in pairs(transform_recipes) do
+	for grp, result in pairs(magicalities.wands.transform_recipes) do
 		if minetest.get_item_group(node.name, grp) > 0 then
 			to_replace = result
 			break

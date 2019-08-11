@@ -11,19 +11,23 @@ local fmspecelems = {
 	["dark"]  = {5, 4}
 }
 
-local function arcane_table_formspec(data)
+local function arcane_table_formspec(requirements, present)
 	local spec   = ""
 	local labels = ""
 
-	if not data then
-		data = {}
+	if not requirements then
+		requirements = {}
+	end
+
+	if not present then
+		present = {}
 	end
 
 	for name, pos in pairs(fmspecelems) do
 		local cp = ""
 		local y = -0.4
 
-		if not data[name] then
+		if not requirements[name] or not present[name] then
 			cp = "^[colorize:#2f2f2f:200"
 		end
 
@@ -32,9 +36,10 @@ local function arcane_table_formspec(data)
 		end
 
 		spec = spec .. "image["..pos[1]..","..pos[2]..";1,1;magicalities_symbol_"..name..".png"..cp.."]"
+		spec = spec .. "tooltip["..pos[1]..","..pos[2]..";1,1;"..magicalities.elements[name].description.."]"
 
-		if data[name] then
-			labels = labels .. "label["..(pos[1] + 0.3)..","..(pos[2] + y)..";"..data[name].."]"
+		if requirements[name] then
+			labels = labels .. "label["..(pos[1] + 0.3)..","..(pos[2] + y)..";"..requirements[name].."]"
 		end
 	end
 
@@ -47,6 +52,7 @@ local function arcane_table_formspec(data)
 		spec..
 		"list[context;craft;2,1.5;3,3;]"..
 		"list[context;craftres;7,2.5;1,1;]"..
+		"image[7,1;1,1;magicalities_gui_wand_slot.png]"..
 		"list[context;wand;7,1;1,1;]"..
 		labels..
 		"image[6,2.5;1,1;gui_furnace_arrow_bg.png^[transformR270]"..
@@ -204,13 +210,24 @@ local function set_output(pos)
 	return output, result.requirements
 end
 
+local function requirements_present(requirements, wand)
+	local present = {}
+	if wand:is_empty() or not requirements then return present end
+	for req, cnt in pairs(requirements) do
+		present[req] = magicalities.wands.wand_has_contents(wand, {[req] = cnt})
+	end
+	return present
+end
+
 local function update_craft(pos)
 	local meta = minetest.get_meta(pos)
 	local inv = meta:get_inventory()
 	local out, reqs = set_output(pos)
 
+	local present = requirements_present(reqs, inv:get_stack("wand", 1))
+
 	if reqs then
-		meta:set_string("formspec", arcane_table_formspec(reqs))
+		meta:set_string("formspec", arcane_table_formspec(reqs, present))
 	else
 		meta:set_string("formspec", arcane_table_formspec({}))
 	end
@@ -279,5 +296,5 @@ minetest.register_node("magicalities:table", {
 			{-0.5000, 0.3750, -0.5000, 0.5000, 0.5000, 0.5000}
 		}
 	},
-	groups = {choppy = 2, oddly_breakable_by_hand = 1, mg_table = 1}
+	groups = {choppy = 2, oddly_breakable_by_hand = 1, enchanted_table = 1}
 })

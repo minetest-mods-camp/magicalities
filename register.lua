@@ -109,3 +109,54 @@ minetest.register_craft({
 	},
 	output = "magicalities:wand_steel",
 })
+
+minetest.register_craft({
+	recipe = {
+		{"group:tree", "group:tree", "group:tree"},
+		{"",           "group:tree", ""},
+		{"group:tree", "group:tree", "group:tree"}
+	},
+	output = "magicalities:table",
+})
+
+local function _flatten(arr)
+	local result = {}
+	for i,v in ipairs(arr) do
+		for j,b in ipairs(v) do
+			table.insert(result, b)
+		end
+	end
+	return result
+end
+
+if minetest.get_modpath("craftguide") ~= nil then
+	craftguide.register_craft_type("arcane", {
+		description = "Arcane Crafting",
+		icon = "magicalities_table_arcane_top.png",
+	})
+
+	for _, recipe in pairs(recipes) do
+		craftguide.register_craft({
+			type   = "arcane",
+			output = recipe.output,
+			width  = 3,
+			height = 3,
+			items  = _flatten(recipe.input),
+		})
+	end
+
+	-- How to make things with wand
+	craftguide.register_craft_type("wand", {
+		description = "Use Wand",
+		icon = "magicalities_wand_iron.png",
+	})
+
+	for g,v in pairs(magicalities.wands.transform_recipes) do
+		craftguide.register_craft({
+			type   = "wand",
+			output = v.result,
+			width  = 1,
+			items  = {"group:"..g},
+		})
+	end
+end
