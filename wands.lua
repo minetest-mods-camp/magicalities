@@ -198,6 +198,7 @@ end
 
 local function wand_action(itemstack, placer, pointed_thing)
 	if not pointed_thing.type == "node" then return itemstack end
+	local pos = pointed_thing.under
 	local node = minetest.get_node(pointed_thing.under)
 	local imeta = itemstack:get_meta()
 
@@ -205,6 +206,16 @@ local function wand_action(itemstack, placer, pointed_thing)
 	if imeta:get_string("contents") == nil or imeta:get_string("contents") == "" then
 		initialize_wand(itemstack)
 		magicalities.wands.update_wand_desc(itemstack)
+	end
+
+	-- Call rightclick on the wand focus
+	local focus, fdef = magicalities.wands.get_wand_focus(itemstack)
+	if focus then
+		if fdef["_wand_node"] and focus_requirements(itemstack, fdef) then
+			itemstack = fdef["_wand_node"](pos, node, placer, itemstack, pointed_thing)
+
+			return itemstack
+		end
 	end
 
 	-- Replacement
@@ -216,14 +227,8 @@ local function wand_action(itemstack, placer, pointed_thing)
 		end
 	end
 
-	-- Call rightclick on the wand focus
-	local focus, fdef = magicalities.wands.get_wand_focus(itemstack)
-	if focus then
-		if fdef["_wand_node"] and focus_requirements(itemstack, fdef) then
-			itemstack = fdef["_wand_node"](pointed_thing.under, node, placer, itemstack, pointed_thing)
-
-			return itemstack
-		end
+	if to_replace and minetest.is_protected(pos, placer:get_player_name()) then
+		to_replace = nil
 	end
 
 	-- Call on_rightclick on the node instead if it cannot be replaced
@@ -231,7 +236,7 @@ local function wand_action(itemstack, placer, pointed_thing)
 		local nodedef = minetest.registered_nodes[node.name]
 		
 		if nodedef.on_rightclick then
-			itemstack = nodedef.on_rightclick(pointed_thing.under, node, placer, itemstack, pointed_thing)
+			itemstack = nodedef.on_rightclick(pos, node, placer, itemstack, pointed_thing)
 		end
 
 		return itemstack
@@ -243,11 +248,11 @@ local function wand_action(itemstack, placer, pointed_thing)
 		magicalities.wands.update_wand_desc(itemstack)
 	end
 
-	minetest.swap_node(pointed_thing.under, {name = to_replace.result, param1 = node.param1, param2 = node.param2})
+	minetest.swap_node(pos, {name = to_replace.result, param1 = node.param1, param2 = node.param2})
 	
 	local spec = minetest.registered_nodes[to_replace.result]
 	if spec.on_construct then
-		spec.on_construct(pointed_thing.under)
+		spec.on_construct(pos)
 	end
 
 	return itemstack
@@ -269,6 +274,16 @@ local function use_wand(itemstack, user, pointed_thing)
 			itemstack = fdef["_wand_use"](itemstack, user, pointed_thing)
 
 			return itemstack
+		end
+	end
+
+	-- Call use on the node
+	local pos = pointed_thing.under
+	local node = minetest.get_node_or_nil(pos)
+	if node and node.name ~= "air" then
+		local ndef = minetest.registered_nodes[node.name]
+		if ndef['_wand_use'] then
+			return ndef['_wand_use'](pos, node, itemstack, user, pointed_thing)
 		end
 	end
 

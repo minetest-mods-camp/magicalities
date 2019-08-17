@@ -37,5 +37,8 @@ dofile(modpath.."/craftitems.lua")
 -- Scanner
 dofile(modpath.."/scanner.lua")
 
+-- Cauldron
+dofile(modpath.."/cauldron.lua")
+
 -- Register
 dofile(modpath.."/register.lua")
