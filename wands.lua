@@ -278,12 +278,14 @@ local function use_wand(itemstack, user, pointed_thing)
 	end
 
 	-- Call use on the node
-	local pos = pointed_thing.under
-	local node = minetest.get_node_or_nil(pos)
-	if node and node.name ~= "air" then
-		local ndef = minetest.registered_nodes[node.name]
-		if ndef['_wand_use'] then
-			return ndef['_wand_use'](pos, node, itemstack, user, pointed_thing)
+	if pointed_thing.type == "node" then
+		local pos = pointed_thing.under
+		local node = minetest.get_node_or_nil(pos)
+		if node and node.name ~= "air" then
+			local ndef = minetest.registered_nodes[node.name]
+			if ndef['_wand_use'] then
+				return ndef['_wand_use'](pos, node, itemstack, user, pointed_thing)
+			end
 		end
 	end
 

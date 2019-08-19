@@ -159,4 +159,22 @@ if minetest.get_modpath("craftguide") ~= nil then
 			items  = {"group:"..g},
 		})
 	end
+
+	-- Cauldron
+	craftguide.register_craft_type("cauldron", {
+		description = "Cauldron",
+		icon = "magicalities_cauldron.png",
+	})
+
+	for g,v in pairs(magicalities.cauldron.recipes) do
+		local height = math.ceil(#v.items / 3)
+		local width = math.floor(#v.items % 3)
+		craftguide.register_craft({
+			type   = "cauldron",
+			output = v.output,
+			height = height,
+			width  = width,
+			items  = v.items,
+		})
+	end
 end

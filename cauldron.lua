@@ -4,11 +4,12 @@ local _fldlib = minetest.get_modpath("fluid_lib") ~= nil
 magicalities.cauldron = {
 	recipes = {
 		{
-			items = {"default:coal_lump 9"},
+			items = {"default:steel_ingot", "default:obsidian"},
 			requirements = {
-				earth = 5
+				earth = 1,
+				dark  = 1,
 			},
-			output = "default:diamond"
+			output = "magicalities:tellium"
 		}
 	}
 }
@@ -16,11 +17,13 @@ magicalities.cauldron = {
 local function flatten_stacks(stacks)
 	local temp = {}
 	for _, stack in pairs(stacks) do
-		local name = stack:get_name()
-		if not temp[name] then 
-			temp[name] = stack:get_count()
-		else
-			temp[name] = temp[name] + stack:get_count()
+		if not stack:is_empty() then
+			local name = stack:get_name()
+			if not temp[name] then 
+				temp[name] = stack:get_count()
+			else
+				temp[name] = temp[name] + stack:get_count()
+			end
 		end
 	end
 
@@ -33,12 +36,13 @@ local function flatten_stacks(stacks)
 end
 
 local function get_recipe(items_found, wand)
+	local flatstacks = flatten_stacks(items_found)
 	local match = {}
 	for _,r in pairs(magicalities.cauldron.recipes) do
 		local pass = true
 		for _,item in pairs(r.items) do
 			local found = false
-			for _,item2 in pairs(items_found) do
+			for _,item2 in pairs(flatstacks) do
 				local i1 = ItemStack(item)
 				local i2 = ItemStack(item2)
 				if i1:get_name() == i2:get_name() and i2:get_count() >= i1:get_count() then
@@ -124,7 +128,7 @@ local _clddef = {
 		if not user or user:get_player_name() == "" then return itemstack end
 		local meta = minetest.get_meta(pos)
 		local inv = meta:get_inventory()
-		local stacks = flatten_stacks(inv:get_list("items"))
+		local stacks = inv:get_list("items")
 		local recipe = get_recipe(stacks, itemstack)
 
 		if user:get_player_control().sneak then
@@ -136,20 +140,25 @@ local _clddef = {
 
 		if not recipe then return itemstack end
 
-		for _,st in pairs(recipe.items) do
-			for _,sta in pairs(stacks) do
-				if sta:get_name() == st then
-					sta:take_item(ItemStack(st):get_count())
+		for j = 1, 16 do
+			if not recipe then break end
+			for _,st in pairs(recipe.items) do
+				for _,sta in pairs(stacks) do
+					if sta:get_name() == st then
+						sta:take_item(ItemStack(st):get_count())
+					end
 				end
 			end
+
+			minetest.item_drop(ItemStack(recipe.output), user, user:get_pos())
+			itemstack = magicalities.wands.wand_take_contents(itemstack, recipe.requirements)
+			inv:set_list("items", stacks)
+			recipe = get_recipe(stacks, itemstack)
 		end
 
-		--inv:set_list("items", stacks)
 		inv:set_list("items", {})
 		node.name = "magicalities:cauldron"
 		minetest.swap_node(pos, node)
-		minetest.item_drop(ItemStack(recipe.output), user, user:get_pos())
-		itemstack = magicalities.wands.wand_take_contents(itemstack, recipe.requirements)
 		magicalities.wands.update_wand_desc(itemstack)
 
 		return itemstack
