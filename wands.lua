@@ -2,9 +2,51 @@
 
 magicalities.wands = {}
 
+local function pickup_jarred(itemstack, user, glassp)
+	local node = minetest.get_node_or_nil(glassp)
+	if not node or node.name ~= "default:glass" then return nil end
+	local closest = minetest.find_node_near(glassp, 1, "group:crystal_cluster")
+	if not closest then return nil end
+	if minetest.is_protected(closest, user:get_player_name()) then return nil end
+	local cap = minetest.find_nodes_in_area(
+		vector.add(closest, {x = -1, y = 1, z = -1}),
+		vector.add(closest, {x = 1, y = 1, z = 1}), {"stairs:slab_wood"})
+	if #cap ~= 9 then return nil end
+	local glass = minetest.find_nodes_in_area(
+		vector.add(closest, {x = -1, y = 0, z = -1}),
+		vector.add(closest, {x = 1, y = -1, z = 1}), {"default:glass", "group:crystal_cluster"})
+	if #glass ~= 18 then return nil end
+	local node = minetest.get_node(closest)
+	local item = ItemStack(node.name)
+	local nmeta = minetest.get_meta(closest)
+	local imeta = item:get_meta()
+
+	local contents = nmeta:get_string("contents")
+	if contents ~= "" then
+		local def = minetest.registered_items[node.name]
+		imeta:set_string("description", def.description .. "\n" ..
+			minetest.colorize("#a070e0", "Contains elements!"))
+		imeta:set_string("contents", contents)
+	end
+
+	for _,p in pairs(cap) do
+		minetest.set_node(p, { name = "air" })
+	end
+
+	for _,p in pairs(glass) do
+		minetest.set_node(p, { name = "air" })
+	end
+
+	minetest.add_item(closest, item)
+
+	return itemstack
+end
+
 magicalities.wands.transform_recipes = {
-	["enchanted_table"] = {result = "magicalities:arcane_table", requirements = nil},
-	["tree"]     = {result = "magicalities:tree_enchanted", requirements = nil}
+	["group:enchanted_table"] = {result = "magicalities:arcane_table", requirements = nil},
+	["default:bookshelf"]     = {result = "magicalities:book", requirements = nil, drop = true},
+	["default:glass"]         = {result = pickup_jarred, requirements = nil},
+	["group:tree"]            = {result = "magicalities:tree_enchanted", requirements = nil},
 }
 
 local wandcaps = {
@@ -96,7 +138,7 @@ function magicalities.wands.update_wand_desc(stack)
 		focusstr = def.description
 	end
 
-	strbld = strbld .. minetest.colorize("#5716ad", focusstr) .. "\n"
+	strbld = strbld .. minetest.colorize("#a070e0", focusstr) .. "\n"
 	if #elems > 0 then
 		table.sort(elems)
 		strbld = strbld .. "\n" .. table.concat(elems, "\n")
@@ -218,41 +260,10 @@ local function wand_action(itemstack, placer, pointed_thing)
 		end
 	end
 
-	-- Replacement
-	local to_replace = nil
-	for grp, result in pairs(magicalities.wands.transform_recipes) do
-		if minetest.get_item_group(node.name, grp) > 0 then
-			to_replace = result
-			break
-		end
-	end
-
-	if to_replace and minetest.is_protected(pos, placer:get_player_name()) then
-		to_replace = nil
-	end
-
-	-- Call on_rightclick on the node instead if it cannot be replaced
-	if not to_replace then
-		local nodedef = minetest.registered_nodes[node.name]
-		
-		if nodedef.on_rightclick then
-			itemstack = nodedef.on_rightclick(pos, node, placer, itemstack, pointed_thing)
-		end
-
-		return itemstack
-	end
-	
-	if to_replace.requirements then
-		if not magicalities.wands.wand_has_contents(itemstack, to_replace.requirements) then return itemstack end
-		itemstack = magicalities.wands.wand_take_contents(itemstack, to_replace.requirements)
-		magicalities.wands.update_wand_desc(itemstack)
-	end
-
-	minetest.swap_node(pos, {name = to_replace.result, param1 = node.param1, param2 = node.param2})
-	
-	local spec = minetest.registered_nodes[to_replace.result]
-	if spec.on_construct then
-		spec.on_construct(pos)
+	-- Call on_rightclick on the node
+	local nodedef = minetest.registered_nodes[node.name]
+	if nodedef.on_rightclick then
+		itemstack = nodedef.on_rightclick(pos, node, placer, itemstack, pointed_thing)
 	end
 
 	return itemstack
@@ -262,7 +273,7 @@ local function use_wand(itemstack, user, pointed_thing)
 	local imeta = itemstack:get_meta()
 
 	-- Initialize wand metadata
-	if imeta:get_string("contents") == nil or imeta:get_string("contents") == "" then
+	if imeta:get_string("contents") == "" then
 		initialize_wand(itemstack)
 		magicalities.wands.update_wand_desc(itemstack)
 	end
@@ -277,16 +288,68 @@ local function use_wand(itemstack, user, pointed_thing)
 		end
 	end
 
-	-- Call use on the node
-	if pointed_thing.type == "node" then
-		local pos = pointed_thing.under
-		local node = minetest.get_node_or_nil(pos)
-		if node and node.name ~= "air" then
-			local ndef = minetest.registered_nodes[node.name]
-			if ndef['_wand_use'] then
-				return ndef['_wand_use'](pos, node, itemstack, user, pointed_thing)
+	if pointed_thing.type ~= "node" then
+		magicalities.wands.update_wand_desc(itemstack)
+		return itemstack
+	end
+
+	local pos = pointed_thing.under
+	local node = minetest.get_node_or_nil(pos)
+
+	if not node or node.name == "air" or minetest.is_protected(pos, user:get_player_name()) then
+		magicalities.wands.update_wand_desc(itemstack)
+		return itemstack
+	end
+
+	-- Replacement
+	local to_replace = nil
+	for name, result in pairs(magicalities.wands.transform_recipes) do
+		if name:match("group:") ~= nil and
+			minetest.get_item_group(node.name, string.gsub(name, "group:", "")) > 0 then
+			to_replace = result
+			break
+		elseif name == node.name then
+			to_replace = result
+			break
+		end
+	end
+
+	if to_replace then
+		local take_req = true
+
+		if type(to_replace.result) == "function" then
+			local t = to_replace.result(itemstack, user, pos)
+			if not t then
+				take_req = false
+			else
+				itemstack = t
+			end
+		elseif to_replace.drop then
+			minetest.add_item(pos, ItemStack(to_replace.result))
+			minetest.set_node(pos, {name = "air"})
+		else
+			minetest.swap_node(pos, {name = to_replace.result, param1 = node.param1, param2 = node.param2})
+			local spec = minetest.registered_nodes[to_replace.result]
+			if spec.on_construct then
+				spec.on_construct(pos)
 			end
 		end
+
+		if take_req and to_replace.requirements then
+			if not magicalities.wands.wand_has_contents(itemstack, to_replace.requirements) then
+				return itemstack
+			end
+			itemstack = magicalities.wands.wand_take_contents(itemstack, to_replace.requirements)
+		end
+
+		magicalities.wands.update_wand_desc(itemstack)
+		return itemstack
+	end
+
+	-- Call _wand_use on the node, if it has the callback registered
+	local ndef = minetest.registered_nodes[node.name]
+	if ndef['_wand_use'] then
+		return ndef['_wand_use'](pos, node, itemstack, user, pointed_thing)
 	end
 
 	magicalities.wands.update_wand_desc(itemstack)

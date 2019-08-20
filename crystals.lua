@@ -187,6 +187,11 @@ function magicalities.register_crystal(element, description, color)
 		sounds = default.node_sound_glass_defaults(),
 
 		on_rightclick = crystal_rightclick,
+        after_place_node = function(pos, placer, itemstack, pointed_thing)
+        	local meta = minetest.get_meta(pos)
+        	local imeta = itemstack:get_meta()
+        	meta:set_string("contents", imeta:get_string("contents"))
+    	end
 	})
 
 	-- Crystal Block
@@ -259,8 +264,8 @@ end
 minetest.register_abm({
 	label     = "Crystal Elements Refill",
 	nodenames = {"group:crystal_cluster"},
-	interval  = 60.0,
-	chance    = 10,
+	interval  = 30.0,
+	chance    = 2,
 	action    = function (pos, node, active_object_count, active_object_count_wider)
 		local meta = minetest.get_meta(pos)
 		local contents = meta:get_string("contents")

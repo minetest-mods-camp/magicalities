@@ -40,5 +40,8 @@ dofile(modpath.."/scanner.lua")
 -- Cauldron
 dofile(modpath.."/cauldron.lua")
 
+-- Book
+dofile(modpath.."/book.lua")
+
 -- Register
 dofile(modpath.."/register.lua")

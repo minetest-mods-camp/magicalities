@@ -252,12 +252,14 @@ if minetest.get_modpath("craftguide") ~= nil then
 	})
 
 	for g,v in pairs(magicalities.wands.transform_recipes) do
-		craftguide.register_craft({
-			type   = "wand",
-			output = v.result,
-			width  = 1,
-			items  = {"group:"..g},
-		})
+		if v.result and type(v.result) == "string" then
+			craftguide.register_craft({
+				type   = "wand",
+				output = v.result,
+				width  = 1,
+				items  = {g},
+			})
+		end
 	end
 
 	-- Cauldron
