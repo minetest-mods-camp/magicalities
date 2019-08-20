@@ -56,6 +56,97 @@ local recipes = {
 			["light"] = 5,
 			["dark"]  = 5,
 		}
+	},
+	{
+		input = {
+			{"group:crystal",        "magicalities:tellium", "group:crystal"},
+			{"magicalities:tellium", "group:crystal",        "magicalities:tellium"},
+			{"group:crystal",        "magicalities:tellium", "group:crystal"}
+		},
+		output = "magicalities:focus_blank",
+		requirements = {
+			["light"] = 10,
+			["dark"] = 10,
+		}
+	},
+	{
+		input = {
+			{"magicalities:crystal_earth", "magicalities:tellium",     "magicalities:crystal_earth"},
+			{"magicalities:tellium",       "magicalities:focus_blank", "magicalities:tellium"},
+			{"magicalities:crystal_earth", "magicalities:tellium",     "magicalities:crystal_earth"}
+		},
+		output = "magicalities:focus_atk_earth",
+		requirements = {
+			["earth"] = 50,
+		}
+	},
+	{
+		input = {
+			{"magicalities:crystal_air", "magicalities:tellium",     "magicalities:crystal_air"},
+			{"magicalities:tellium",     "magicalities:focus_blank", "magicalities:tellium"},
+			{"magicalities:crystal_air", "magicalities:tellium",     "magicalities:crystal_air"}
+		},
+		output = "magicalities:focus_atk_air",
+		requirements = {
+			["air"] = 50,
+		}
+	},
+	{
+		input = {
+			{"magicalities:crystal_water", "magicalities:tellium",     "magicalities:crystal_water"},
+			{"magicalities:tellium",       "magicalities:focus_blank", "magicalities:tellium"},
+			{"magicalities:crystal_water", "magicalities:tellium",     "magicalities:crystal_water"}
+		},
+		output = "magicalities:focus_atk_water",
+		requirements = {
+			["water"] = 50,
+		}
+	},
+	{
+		input = {
+			{"magicalities:crystal_fire", "magicalities:tellium",     "magicalities:crystal_fire"},
+			{"magicalities:tellium",      "magicalities:focus_blank", "magicalities:tellium"},
+			{"magicalities:crystal_fire", "magicalities:tellium",     "magicalities:crystal_fire"}
+		},
+		output = "magicalities:focus_atk_fire",
+		requirements = {
+			["fire"] = 50,
+		}
+	},
+	{
+		input = {
+			{"magicalities:crystal_earth", "default:dirt",                 "magicalities:crystal_light"},
+			{"magicalities:transterra",    "magicalities:focus_atk_earth", "magicalities:transterra"},
+			{"magicalities:crystal_light", "default:stone",                "magicalities:crystal_earth"}
+		},
+		output = "magicalities:focus_swap",
+		requirements = {
+			["earth"] = 25,
+			["light"] = 25,
+		}
+	},
+	{
+		input = {
+			{"magicalities:crystal_earth", "magicalities:tellium",     "magicalities:transterra"},
+			{"magicalities:tellium",       "magicalities:focus_blank", "magicalities:tellium"},
+			{"magicalities:transterra",    "magicalities:tellium",     "magicalities:crystal_earth"}
+		},
+		output = "magicalities:focus_tunnel",
+		requirements = {
+			["earth"] = 25,
+			["dark"]  = 25,
+		}
+	},
+	{
+		input = {
+			{"magicalities:crystal_air", "",                           "magicalities:crystal_air"},
+			{"",                         "magicalities:focus_atk_air", ""},
+			{"magicalities:crystal_air", "",                           "magicalities:crystal_air"}
+		},
+		output = "magicalities:focus_teleport",
+		requirements = {
+			["air"] = 10,
+		}
 	}
 }
 
@@ -117,6 +208,15 @@ minetest.register_craft({
 		{"group:tree", "group:tree", "group:tree"}
 	},
 	output = "magicalities:table",
+})
+
+minetest.register_craft({
+	recipe = {
+		{"default:steelblock", "", "default:steelblock"},
+		{"default:steelblock", "", "default:steelblock"},
+		{"default:steelblock", "default:steelblock", "default:steelblock"}
+	},
+	output = "magicalities:cauldron",
 })
 
 local function _flatten(arr)

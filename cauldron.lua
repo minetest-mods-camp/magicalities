@@ -10,6 +10,14 @@ magicalities.cauldron = {
 				dark  = 1,
 			},
 			output = "magicalities:tellium"
+		},
+		{
+			items = {"default:stone", "default:dirt", "magicalities:crystal_fire"},
+			requirements = {
+				fire  = 5,
+				earth = 5,
+			},
+			output = "magicalities:transterra"
 		}
 	}
 }
