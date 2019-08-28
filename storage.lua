@@ -9,18 +9,16 @@
 	}
 ]]
 
+-- Modstorage
+local storage = minetest.get_mod_storage()
+
 -- Memory cache
 magicalities.data = {}
 
 function magicalities.load_player_data(player_name)
-	local world     = minetest.get_worldpath()
-	local directory = world.."/magicalities"
-	minetest.mkdir(directory)
+	local stdata = minetest.deserialize(storage:get_string(player_name))
 
-	local filetag = player_name..".info.json"
-	local file = io.open(directory.."/"..filetag)
-	
-	if not file then
+	if not stdata then
 		magicalities.data[player_name] = {
 			recipes = {},
 			abilities = {},
@@ -30,27 +28,19 @@ function magicalities.load_player_data(player_name)
 		return
 	end
 
-	local str = ""
-	for line in file:lines() do
-		str = str..line
-	end
-
-	file:close()
-
-	magicalities.data[player_name] = minetest.deserialize(str)
+	magicalities.data[player_name] = stdata
 end
 
 function magicalities.save_player_data(player_name)
-	if not magicalities.data[player_name] then return nil end
+	if not magicalities.data[player_name] then return end
+	local data = magicalities.data[player_name]
 
-	local world     = minetest.get_worldpath()
-	local directory = world.."/magicalities"
-	minetest.mkdir(directory)
+	-- Do not save empty data
+	if #data.recipes == 0 and #data.abilities == 0 and #data.protect == 0 and data.research == 0 then return end
 
-	local filetag = player_name..".info.json"
-	local data    = minetest.serialize(magicalities.data[player_name])
+	local str = minetest.serialize(data)
 
-	minetest.safe_file_write(directory.."/"..filetag, data)
+	storage:set_string(player_name, str)
 end
 
 function magicalities.save_all_data()

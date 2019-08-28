@@ -116,6 +116,9 @@ end
 function magicalities.wands.update_wand_desc(stack)
 	local meta = stack:get_meta()
 	local data_table = minetest.deserialize(meta:get_string("contents"))
+	if not data_table then data_table = {} end
+
+	local focus, fdef = magicalities.wands.get_wand_focus(stack)
 
 	local wanddata    = minetest.registered_items[stack:get_name()]
 	local description = wanddata.description
@@ -127,18 +130,21 @@ function magicalities.wands.update_wand_desc(stack)
 		local dataelem = magicalities.elements[elem]
 		if amount > 0 then
 			if amount < 10 then amount = "0"..amount end
-			elems[#elems + 1] = "["..amount.."/"..capcontents.."] "..
-				minetest.colorize(dataelem.color, dataelem.description)
+			local str = "["..amount.."/"..capcontents.."] "
+			str = str .. minetest.colorize(dataelem.color, dataelem.description)
+			if focus and fdef and fdef['_wand_requirements'] and fdef['_wand_requirements'][elem] ~= nil then
+				str = str .. minetest.colorize("#5716ad", " ("..fdef['_wand_requirements'][elem]..") ")
+			end
+			elems[#elems + 1] = str
 		end
 	end
 
-	local focus, def = magicalities.wands.get_wand_focus(stack)
 	local focusstr = "No Wand Focus"
 	if focus then
-		focusstr = def.description
+		focusstr = fdef.description
 	end
 
-	strbld = strbld .. minetest.colorize("#a070e0", focusstr) .. "\n"
+	strbld = strbld .. minetest.colorize("#5716ad", focusstr) .. "\n"
 	if #elems > 0 then
 		table.sort(elems)
 		strbld = strbld .. "\n" .. table.concat(elems, "\n")
