@@ -230,19 +230,35 @@ local function _flatten(arr)
 end
 
 if minetest.get_modpath("craftguide") ~= nil then
+	local function construct_gridset(list)
+		local final = {}
+		for a,v in pairs(list) do
+			local height = math.ceil(a / 3)
+			if not final[height] then
+				if v == "" then v = "," end
+				final[height] = v
+			else
+				final[height] = final[height] .. "," .. v
+			end
+		end
+		return final
+	end
+
+	local function register_craftguide_recipe(type,output,items)
+		craftguide.register_craft({
+			type   = type,
+			output = output,
+			items  = construct_gridset(items),
+		})
+	end
+
 	craftguide.register_craft_type("arcane", {
 		description = "Arcane Crafting",
 		icon = "magicalities_table_arcane_top.png",
 	})
 
 	for _, recipe in pairs(recipes) do
-		craftguide.register_craft({
-			type   = "arcane",
-			output = recipe.output,
-			width  = 3,
-			height = 3,
-			items  = _flatten(recipe.input),
-		})
+		register_craftguide_recipe("arcane", recipe.output, _flatten(recipe.input))
 	end
 
 	-- How to make things with wand
@@ -253,12 +269,7 @@ if minetest.get_modpath("craftguide") ~= nil then
 
 	for g,v in pairs(magicalities.wands.transform_recipes) do
 		if v.result and type(v.result) == "string" then
-			craftguide.register_craft({
-				type   = "wand",
-				output = v.result,
-				width  = 1,
-				items  = {g},
-			})
+			register_craftguide_recipe("wand", v.result, {g})
 		end
 	end
 
@@ -269,14 +280,6 @@ if minetest.get_modpath("craftguide") ~= nil then
 	})
 
 	for g,v in pairs(magicalities.cauldron.recipes) do
-		local height = math.ceil(#v.items / 3)
-		local width = math.floor(#v.items % 3)
-		craftguide.register_craft({
-			type   = "cauldron",
-			output = v.output,
-			height = height,
-			width  = width,
-			items  = v.items,
-		})
+		register_craftguide_recipe("cauldron", v.output, v.items)
 	end
 end

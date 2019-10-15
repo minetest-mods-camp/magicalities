@@ -133,7 +133,7 @@ function magicalities.wands.update_wand_desc(stack)
 			local str = "["..amount.."/"..capcontents.."] "
 			str = str .. minetest.colorize(dataelem.color, dataelem.description)
 			if focus and fdef and fdef['_wand_requirements'] and fdef['_wand_requirements'][elem] ~= nil then
-				str = str .. minetest.colorize("#5716ad", " ("..fdef['_wand_requirements'][elem]..") ")
+				str = str .. minetest.colorize("#a070e0", " ("..fdef['_wand_requirements'][elem]..") ")
 			end
 			elems[#elems + 1] = str
 		end
@@ -144,7 +144,7 @@ function magicalities.wands.update_wand_desc(stack)
 		focusstr = fdef.description
 	end
 
-	strbld = strbld .. minetest.colorize("#5716ad", focusstr) .. "\n"
+	strbld = strbld .. minetest.colorize("#a070e0", focusstr) .. "\n"
 	if #elems > 0 then
 		table.sort(elems)
 		strbld = strbld .. "\n" .. table.concat(elems, "\n")
