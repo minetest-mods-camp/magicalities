@@ -29,10 +29,15 @@ minetest.register_craftitem("magicalities:focus_teleport", {
 		local targ = ray:next()
 		local can_go = targ == nil
 
+		-- Go above node
 		if targ and targ.type == "node" then
 			local abv = minetest.get_node(targ.above)
 			if not abv or abv.name == "air" then
-				dest = targ.above
+				local add = {x=0,y=0,z=0}
+				if user:get_pos().y < targ.above.y - 1.5 then
+					add.y = 1.5
+				end
+				dest = vector.add(targ.above, add)
 				can_go = true
 			end
 		end

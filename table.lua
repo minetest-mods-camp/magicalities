@@ -68,6 +68,20 @@ local function arcane_table_formspec(requirements, present)
 end
 
 function magicalities.arcane.register_recipe(data)
+	if data.learnable then
+		local recipe_data = { name = data.output }
+
+		if not data.description then
+			local itm = minetest.registered_items[data.output]
+			recipe_data.description = itm.description
+		else
+			recipe_data.description = data.description .. ""
+			data.description = nil
+		end
+
+		magicalities.register_recipe_learnable(recipe_data)
+	end
+
 	table.insert(magicalities.arcane.recipes, data)
 end
 
@@ -142,10 +156,16 @@ function magicalities.arcane.get_recipe(items)
 	local recipe = compare_find(split)
 
 	if not recipe then return nil end
-	local result = {new_input = {}, output = recipe.output, requirements = recipe.requirements}
+	local result = {new_input = {}, output = recipe.output, requirements = recipe.requirements, learn = nil}
 	for _,stack in pairs(items) do
 		stack:take_item(1)
 		result.new_input[#result.new_input + 1] = stack
+	end
+
+	print(dump(recipe))
+
+	if recipe.learnable then
+		result.learn = recipe.output
 	end
 
 	return result
@@ -191,23 +211,23 @@ local function set_output(pos)
 	-- Check for wand
 	local wand = inv:get_stack("wand", 1)
 	if not wand or wand:is_empty() then
-		return nil, result.requirements
+		return nil, result
 	end
 
 	-- Check requirements
 	local requirements = result.requirements
 	if not magicalities.wands.wand_has_contents(wand, requirements) then
-		return nil, result.requirements
+		return nil, result
 	end
 
 	-- Output fits
 	local output = ItemStack(result.output)
 	if not inv:room_for_item("craftres", output) then
-		return inv:get_stack("craftres", 1), result.requirements
+		return inv:get_stack("craftres", 1), result
 	end
 
 	-- Set output
-	return output, result.requirements
+	return output, result
 end
 
 local function requirements_present(requirements, wand)
@@ -222,12 +242,22 @@ end
 local function update_craft(pos)
 	local meta = minetest.get_meta(pos)
 	local inv = meta:get_inventory()
-	local out, reqs = set_output(pos)
+	local out, recipe = set_output(pos)
 
-	local present = requirements_present(reqs, inv:get_stack("wand", 1))
+	-- Make sure wand is inserted
+	-- Check if the recipe has been learned by the player
+	local wand = inv:get_stack("wand", 1)
+	if not recipe or wand:is_empty() and 
+		(recipe.learn ~= nil and not magicalities.player_has_recipe(magicalities.wands.get_wand_owner(wand), recipe.learn)) then
+		meta:set_string("formspec", arcane_table_formspec({}))
+		inv:set_list("craftres", {})
+		return
+	end
 
-	if reqs then
-		meta:set_string("formspec", arcane_table_formspec(reqs, present))
+	local present = requirements_present(recipe.requirements, wand)
+
+	if recipe.requirements then
+		meta:set_string("formspec", arcane_table_formspec(recipe.requirements, present))
 	else
 		meta:set_string("formspec", arcane_table_formspec({}))
 	end

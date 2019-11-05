@@ -45,7 +45,7 @@ end
 magicalities.wands.transform_recipes = {
 	["group:enchanted_table"] = {result = "magicalities:arcane_table", requirements = nil},
 	["default:bookshelf"]     = {result = "magicalities:book", requirements = nil, drop = true},
-	["default:glass"]         = {result = pickup_jarred, requirements = nil},
+	["default:glass"]         = {result = pickup_jarred, requirements = nil, learn = "magicalities:pickup_jarred"},
 	["group:tree"]            = {result = "magicalities:tree_enchanted", requirements = nil},
 }
 
@@ -75,6 +75,11 @@ function magicalities.wands.get_wand_focus(stack)
 	if not itemdef then return nil end
 
 	return focus, itemdef
+end
+
+function magicalities.wands.get_wand_owner(stack)
+	local meta = stack:get_meta()
+	return meta:get_string("player")
 end
 
 local function focus_requirements(stack, fdef)
@@ -250,6 +255,9 @@ local function wand_action(itemstack, placer, pointed_thing)
 	local node = minetest.get_node(pointed_thing.under)
 	local imeta = itemstack:get_meta()
 
+	-- Set last wand user
+	imeta:set_string("player", placer:get_player_name())
+
 	-- Initialize wand metadata
 	if imeta:get_string("contents") == nil or imeta:get_string("contents") == "" then
 		initialize_wand(itemstack)
@@ -277,6 +285,9 @@ end
 
 local function use_wand(itemstack, user, pointed_thing)
 	local imeta = itemstack:get_meta()
+
+	-- Set last wand user
+	imeta:set_string("player", user:get_player_name())
 
 	-- Initialize wand metadata
 	if imeta:get_string("contents") == "" then
@@ -318,6 +329,11 @@ local function use_wand(itemstack, user, pointed_thing)
 			to_replace = result
 			break
 		end
+	end
+
+	-- Make sure player has this replacement ability
+	if to_replace and to_replace.learn and not magicalities.player_has_ability(magicalities.wands.get_wand_owner(itemstack), to_replace.learn) then
+		to_replace = nil
 	end
 
 	if to_replace then

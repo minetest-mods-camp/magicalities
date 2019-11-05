@@ -31,3 +31,23 @@ minetest.register_craftitem("magicalities:transterra", {
 	groups = {shard = 1, transterra = 1}
 })
 
+local function grant_research(itemstack, placer, pointed_thing)
+	if not placer or placer:get_player_name() == "" then return itemstack end
+	local name = placer:get_player_name()
+	local points = math.random(1, 10)
+	magicalities.deal_research_points(name, points)
+	minetest.chat_send_player(name, "This Research Note granted you " .. points .. " Research Points!")
+	if not (creative and creative.is_enabled_for and creative.is_enabled_for(name)) then
+		itemstack:take_item(1)
+	end
+	return itemstack
+end
+
+minetest.register_craftitem("magicalities:note", {
+	description = "Research Note",
+	inventory_image = "magicalities_note.png",
+	groups = {note = 1},
+	on_place = grant_research,
+	on_secondary_use = grant_research
+})
+

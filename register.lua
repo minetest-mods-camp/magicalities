@@ -8,6 +8,24 @@ for name, data in pairs(magicalities.elements) do
 	end
 end
 
+-----------
+-- Wands --
+-----------
+
+-- Iron
+magicalities.wands.register_wand("steel", {
+	description = "Steel-Capped Wand",
+	image       = "magicalities_wand_iron.png",
+	wand_cap    = 25,
+})
+
+-- Gold
+magicalities.wands.register_wand("gold", {
+	description = "Gold-Capped Wand",
+	image       = "magicalities_wand_gold.png",
+	wand_cap    = 50,
+})
+
 -----------------------------
 -- Arcane crafting recipes --
 -----------------------------
@@ -154,24 +172,6 @@ for _, recipe in pairs(recipes) do
 	magicalities.arcane.register_recipe(recipe)
 end
 
------------
--- Wands --
------------
-
--- Iron
-magicalities.wands.register_wand("steel", {
-	description = "Steel-Capped Wand",
-	image       = "magicalities_wand_iron.png",
-	wand_cap    = 25,
-})
-
--- Gold
-magicalities.wands.register_wand("gold", {
-	description = "Gold-Capped Wand",
-	image       = "magicalities_wand_gold.png",
-	wand_cap    = 50,
-})
-
 --------------------
 -- Basic Crafting --
 --------------------
@@ -283,3 +283,10 @@ if minetest.get_modpath("craftguide") ~= nil then
 		register_craftguide_recipe("cauldron", v.output, v.items)
 	end
 end
+
+-- Other
+
+magicalities.register_ability_learnable({
+	name = "magicalities:pickup_jarred",
+	description = "pick up nodes using jars"
+})

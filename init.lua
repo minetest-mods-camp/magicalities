@@ -16,6 +16,9 @@ magicalities.elements = {
 	-- Inherited Elements
 }
 
+-- Storage
+dofile(modpath.."/storage.lua")
+
 -- Crystals
 dofile(modpath.."/crystals.lua")
 
