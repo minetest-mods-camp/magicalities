@@ -61,7 +61,8 @@ local recipes = {
 			["fire"]  = 25,
 			["dark"]  = 25,
 			["air"]   = 25,
-		}
+		},
+		learnable = true
 	},
 	{
 		input = {
@@ -85,6 +86,9 @@ local recipes = {
 		requirements = {
 			["light"] = 10,
 			["dark"] = 10,
+		},
+		learnable = {
+			depends = {"magicalities:tellium"}
 		}
 	},
 	{
@@ -96,6 +100,9 @@ local recipes = {
 		output = "magicalities:focus_atk_earth",
 		requirements = {
 			["earth"] = 50,
+		},
+		learnable = {
+			depends = {"magicalities:focus_blank"}
 		}
 	},
 	{
@@ -107,6 +114,9 @@ local recipes = {
 		output = "magicalities:focus_atk_air",
 		requirements = {
 			["air"] = 50,
+		},
+		learnable = {
+			depends = {"magicalities:focus_blank"}
 		}
 	},
 	{
@@ -118,6 +128,9 @@ local recipes = {
 		output = "magicalities:focus_atk_water",
 		requirements = {
 			["water"] = 50,
+		},
+		learnable = {
+			depends = {"magicalities:focus_blank"}
 		}
 	},
 	{
@@ -129,6 +142,9 @@ local recipes = {
 		output = "magicalities:focus_atk_fire",
 		requirements = {
 			["fire"] = 50,
+		},
+		learnable = {
+			depends = {"magicalities:focus_blank"}
 		}
 	},
 	{
@@ -141,6 +157,9 @@ local recipes = {
 		requirements = {
 			["earth"] = 25,
 			["light"] = 25,
+		},
+		learnable = {
+			depends = {"magicalities:focus_atk_earth"}
 		}
 	},
 	{
@@ -153,6 +172,9 @@ local recipes = {
 		requirements = {
 			["earth"] = 25,
 			["dark"]  = 25,
+		},
+		learnable = {
+			depends = {"magicalities:focus_blank", "magicalities:transterra"}
 		}
 	},
 	{
@@ -164,12 +186,44 @@ local recipes = {
 		output = "magicalities:focus_teleport",
 		requirements = {
 			["air"] = 10,
+		},
+		learnable = {
+			depends = {"magicalities:focus_blank"}
 		}
 	}
 }
 
 for _, recipe in pairs(recipes) do
 	magicalities.arcane.register_recipe(recipe)
+end
+
+--------------
+-- Cauldron --
+--------------
+
+local cauldron_recipes = {
+	{
+		items = {"default:steel_ingot", "default:obsidian"},
+		requirements = {
+			earth = 1,
+			dark  = 1,
+		},
+		output = "magicalities:tellium",
+		learnable = true
+	},
+	{
+		items = {"default:stone", "default:dirt", "magicalities:crystal_fire"},
+		requirements = {
+			fire  = 5,
+			earth = 5,
+		},
+		output = "magicalities:transterra",
+		learnable = true
+	}
+}
+
+for _, recipe in pairs(cauldron_recipes) do
+	magicalities.cauldron.register_recipe(recipe)
 end
 
 --------------------
@@ -279,14 +333,20 @@ if minetest.get_modpath("craftguide") ~= nil then
 		icon = "magicalities_cauldron.png",
 	})
 
-	for g,v in pairs(magicalities.cauldron.recipes) do
+	for g,v in pairs(cauldron_recipes) do
 		register_craftguide_recipe("cauldron", v.output, v.items)
 	end
 end
 
--- Other
+-- Abilities
 
 magicalities.register_ability_learnable({
 	name = "magicalities:pickup_jarred",
-	description = "pick up nodes using jars"
+	description = "pick up crystals using jars"
+})
+
+magicalities.register_recipe_learnable({
+	name = "magicalities:cauldron",
+	description = "Cauldron",
+	default = true
 })

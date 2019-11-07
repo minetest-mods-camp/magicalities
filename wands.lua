@@ -2,6 +2,15 @@
 
 magicalities.wands = {}
 
+-- This is a method of picking up crystals without breaking them into shards and preserving all of their elements.
+-- Surround a crystal in a 3x3 thing of glass, except for the top layer, which has to be wood slabs.
+-- When the structure is complete, hit any node of glass with the wand.
+-- Views from the side:
+--        (middle)
+--   sss    sss    sss
+--   ggg    gxg    ggg
+--   ggg    ggg    ggg
+-- s: stairs:slab_wood, g: default:glass, x: group:crystal_cluster
 local function pickup_jarred(itemstack, user, glassp)
 	local node = minetest.get_node_or_nil(glassp)
 	if not node or node.name ~= "default:glass" then return nil end
@@ -133,13 +142,14 @@ function magicalities.wands.update_wand_desc(stack)
 	local elems = {}
 	for elem, amount in pairs(data_table) do
 		local dataelem = magicalities.elements[elem]
-		if amount > 0 then
-			if amount < 10 then amount = "0"..amount end
-			local str = "["..amount.."/"..capcontents.."] "
-			str = str .. minetest.colorize(dataelem.color, dataelem.description)
-			if focus and fdef and fdef['_wand_requirements'] and fdef['_wand_requirements'][elem] ~= nil then
-				str = str .. minetest.colorize("#a070e0", " ("..fdef['_wand_requirements'][elem]..") ")
-			end
+		local visual = amount
+		if amount < 10 then visual = "0" .. amount end
+		if amount == 0 then visual = minetest.colorize("#ff0505", visual) end
+		local str = "["..visual.."/"..capcontents.."] "
+		str = str .. minetest.colorize(dataelem.color, dataelem.description)
+		if focus and fdef and fdef['_wand_requirements'] and fdef['_wand_requirements'][elem] ~= nil then
+			elems[#elems + 1] = str .. minetest.colorize("#a070e0", " ("..fdef['_wand_requirements'][elem]..") ")
+		elseif amount ~= 0 then
 			elems[#elems + 1] = str
 		end
 	end
@@ -236,7 +246,7 @@ function magicalities.wands.wand_insertable_contents(stack, to_put)
 end
 
 -- Initialize wand metadata
-local function initialize_wand(stack)
+local function initialize_wand(stack, player)
 	local data_table = {}
 
 	for name, data in pairs(magicalities.elements) do
@@ -246,6 +256,7 @@ local function initialize_wand(stack)
 	end
 
 	local meta = stack:get_meta()
+	meta:set_string("player", player)
 	meta:set_string("contents", minetest.serialize(data_table))
 end
 
@@ -255,12 +266,9 @@ local function wand_action(itemstack, placer, pointed_thing)
 	local node = minetest.get_node(pointed_thing.under)
 	local imeta = itemstack:get_meta()
 
-	-- Set last wand user
-	imeta:set_string("player", placer:get_player_name())
-
 	-- Initialize wand metadata
 	if imeta:get_string("contents") == nil or imeta:get_string("contents") == "" then
-		initialize_wand(itemstack)
+		initialize_wand(itemstack, placer:get_player_name())
 		magicalities.wands.update_wand_desc(itemstack)
 	end
 
@@ -286,12 +294,9 @@ end
 local function use_wand(itemstack, user, pointed_thing)
 	local imeta = itemstack:get_meta()
 
-	-- Set last wand user
-	imeta:set_string("player", user:get_player_name())
-
 	-- Initialize wand metadata
 	if imeta:get_string("contents") == "" then
-		initialize_wand(itemstack)
+		initialize_wand(itemstack, user:get_player_name())
 		magicalities.wands.update_wand_desc(itemstack)
 	end
 
@@ -336,6 +341,15 @@ local function use_wand(itemstack, user, pointed_thing)
 		to_replace = nil
 	end
 
+	-- Make sure we can "dig" the node before we, potentially, remove it from the world
+	if to_replace then
+		local ndef = minetest.registered_items[node.name]
+		if ndef.can_dig and not ndef.can_dig(pos, user) then
+			to_replace = nil
+		end
+	end
+
+	-- Commit action
 	if to_replace then
 		local take_req = true
 
@@ -347,10 +361,15 @@ local function use_wand(itemstack, user, pointed_thing)
 				itemstack = t
 			end
 		elseif to_replace.drop then
-			minetest.add_item(pos, ItemStack(to_replace.result))
+			local istack = ItemStack(to_replace.result)
+			local istackdef = minetest.registered_items[to_replace.result]
+			if istackdef._wand_created then
+				istack = istackdef._wand_created(istack, itemstack, user, pos)
+			end
+			minetest.add_item(pos, istack)
 			minetest.set_node(pos, {name = "air"})
 		else
-			minetest.swap_node(pos, {name = to_replace.result, param1 = node.param1, param2 = node.param2})
+			minetest.set_node(pos, {name = to_replace.result, param1 = node.param1, param2 = node.param2})
 			local spec = minetest.registered_nodes[to_replace.result]
 			if spec.on_construct then
 				spec.on_construct(pos)

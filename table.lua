@@ -70,13 +70,24 @@ end
 function magicalities.arcane.register_recipe(data)
 	if data.learnable then
 		local recipe_data = { name = data.output }
+		if type(data.learnable) == "string" then
+			recipe_data.name = data.learnable
+		end
 
-		if not data.description then
-			local itm = minetest.registered_items[data.output]
-			recipe_data.description = itm.description
+		if type(data.learnable) == "table" then
+			recipe_data = table.copy(data.learnable)
+			if not recipe_data.name then
+				recipe_data.name = data.output
+			end
+			data.learnable = recipe_data.name
 		else
-			recipe_data.description = data.description .. ""
-			data.description = nil
+			if not data.description then
+				local itm = minetest.registered_items[data.output]
+				recipe_data.description = itm.description
+			else
+				recipe_data.description = data.description .. ""
+				data.description = nil
+			end
 		end
 
 		magicalities.register_recipe_learnable(recipe_data)
@@ -156,16 +167,10 @@ function magicalities.arcane.get_recipe(items)
 	local recipe = compare_find(split)
 
 	if not recipe then return nil end
-	local result = {new_input = {}, output = recipe.output, requirements = recipe.requirements, learn = nil}
+	local result = {new_input = {}, output = recipe.output, requirements = recipe.requirements, learnable = recipe.learnable}
 	for _,stack in pairs(items) do
 		stack:take_item(1)
 		result.new_input[#result.new_input + 1] = stack
-	end
-
-	print(dump(recipe))
-
-	if recipe.learnable then
-		result.learn = recipe.output
 	end
 
 	return result
@@ -248,7 +253,7 @@ local function update_craft(pos)
 	-- Check if the recipe has been learned by the player
 	local wand = inv:get_stack("wand", 1)
 	if not recipe or wand:is_empty() and 
-		(recipe.learn ~= nil and not magicalities.player_has_recipe(magicalities.wands.get_wand_owner(wand), recipe.learn)) then
+		(recipe.learnable ~= nil and not magicalities.player_has_recipe(magicalities.wands.get_wand_owner(wand), recipe.learnable)) then
 		meta:set_string("formspec", arcane_table_formspec({}))
 		inv:set_list("craftres", {})
 		return

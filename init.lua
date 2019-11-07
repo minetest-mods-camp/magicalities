@@ -19,6 +19,9 @@ magicalities.elements = {
 -- Storage
 dofile(modpath.."/storage.lua")
 
+-- Player abilities
+dofile(modpath.."/ability.lua")
+
 -- Crystals
 dofile(modpath.."/crystals.lua")
 
@@ -30,6 +33,7 @@ dofile(modpath.."/focuses.lua")
 
 -- Tables
 dofile(modpath.."/table.lua")
+dofile(modpath.."/research_table.lua")
 
 -- Nodes
 dofile(modpath.."/nodes.lua")

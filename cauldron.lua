@@ -1,26 +1,35 @@
 
 local _fldlib = minetest.get_modpath("fluid_lib") ~= nil
 
-magicalities.cauldron = {
-	recipes = {
-		{
-			items = {"default:steel_ingot", "default:obsidian"},
-			requirements = {
-				earth = 1,
-				dark  = 1,
-			},
-			output = "magicalities:tellium"
-		},
-		{
-			items = {"default:stone", "default:dirt", "magicalities:crystal_fire"},
-			requirements = {
-				fire  = 5,
-				earth = 5,
-			},
-			output = "magicalities:transterra"
-		}
-	}
-}
+magicalities.cauldron = { recipes = {} }
+
+function magicalities.cauldron.register_recipe(data)
+	if data.learnable then
+		local recipe_data = { name = data.output }
+		if type(data.learnable) == "string" then
+			recipe_data.name = data.learnable
+		end
+
+		if type(data.learnable) == "table" then
+			recipe_data = table.copy(data.learnable)
+			if not recipe_data.name then
+				recipe_data.name = data.output
+			end
+			data.learnable = recipe_data.name
+		end
+
+		if not recipe_data.description then
+			local itm = minetest.registered_items[data.output]
+			recipe_data.description = itm.description
+		else
+			recipe_data.description = data.description .. ""
+		end
+
+		magicalities.register_recipe_learnable(recipe_data)
+	end
+
+	table.insert(magicalities.cauldron.recipes, data)
+end
 
 local function flatten_stacks(stacks)
 	local temp = {}
@@ -147,6 +156,7 @@ local _clddef = {
 		end
 
 		if not recipe then return itemstack end
+		if recipe.learnable and not magicalities.player_has_recipe(magicalities.wands.get_wand_owner(itemstack), recipe.learnable) then return itemstack end
 
 		for j = 1, 16 do
 			if not recipe then break end
