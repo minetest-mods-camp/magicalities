@@ -79,6 +79,10 @@ function magicalities.available_to_player(player_name, unlocked, researchable)
 	return all
 end
 
+local function no_newline(str)
+	return str:gsub("\n(.*)", "")
+end
+
 -- Learn a recipe or an ability
 function magicalities.player_learn(player_name, item, recipe, silent)
 	if not magicalities.data[player_name] then
@@ -91,7 +95,7 @@ function magicalities.player_learn(player_name, item, recipe, silent)
 	if recipe and not magicalities.player_has_recipe(player_name, item) then
 		local recipe_n = recipes[item]
 		if recipe_n then
-			recipe_n = recipe_n.description
+			recipe_n = no_newline(recipe_n.description)
 			table.insert(magicalities.data[player_name].recipes, item)
 			success = true
 			msgname = msgname .. recipe_n
@@ -99,7 +103,7 @@ function magicalities.player_learn(player_name, item, recipe, silent)
 	elseif not recipe and not magicalities.player_has_ability(player_name, item) then
 		local ability_n = abilities[item]
 		if ability_n then
-			ability_n = ability_n.description
+			ability_n = no_newline(ability_n.description)
 			table.insert(magicalities.data[player_name].abilities, item)
 			success = true
 			msgname = "to " .. ability_n

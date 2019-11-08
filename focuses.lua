@@ -1,5 +1,7 @@
 -- Wand Focuses
 
+local particles = minetest.settings:get_bool("mgc_particles", true)
+
 -- Constants
 -- TODO: make settings
 magicalities.magic_spray_count = 16
@@ -299,6 +301,7 @@ local special_fn = {}
 -- Particles
 local randparticles = PcgRandom(os.clock())
 local function shoot_particles (user, velocity, color)
+	if not particles then return end
 	if not color then
 		color = ""
 	else

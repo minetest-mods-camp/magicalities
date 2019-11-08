@@ -45,7 +45,8 @@ local recipes = {
 			["fire"]  = 15,
 			["dark"]  = 15,
 			["air"]   = 15,
-		}
+		},
+		learnable = true
 	},
 	{
 		input = {
@@ -358,7 +359,47 @@ if minetest.get_modpath("craftguide") ~= nil then
 	end
 end
 
--- Abilities
+-- Treasurer mod, add Research Notes as a form of treasure.
+if minetest.get_modpath("treasurer") then
+	treasurer.register_treasure("magicalities:note", 0.35, 5, {1,3}, nil, "tool")
+end
+
+---------------
+-- Abilities --
+---------------
+
+-- Default abilities
+
+magicalities.register_recipe_learnable({
+	name = "magicalities:wand_steel",
+	description = "Wands",
+	default = true,
+})
+
+magicalities.register_ability_learnable({
+	name = "magicalities:crystal",
+	description = "Crystal Tapping\nExtract elements from crystals",
+	icon = "magicalities_crystal_gui.png",
+	default = true,
+})
+
+magicalities.register_recipe_learnable({
+	name = "magicalities:table",
+	description = "Research Table\nDo research about the magic world",
+	default = true,
+})
+
+magicalities.register_recipe_learnable({
+	name = "magicalities:arcane_table",
+	description = "Arcane Table\nCraft magical items",
+	default = true,
+})
+
+magicalities.register_recipe_learnable({
+	name = "magicalities:cauldron",
+	description = "Cauldron",
+	default = true
+})
 
 magicalities.register_ability_learnable({
 	name = "magicalities:crystal_preserve",
@@ -378,10 +419,4 @@ magicalities.register_ability_learnable({
 	description = "Crystal Jarring\nPick up intact crystals using jarring",
 	depends = {"magicalities:crystal_preserve"},
 	icon = "magicalities_jarred.png"
-})
-
-magicalities.register_recipe_learnable({
-	name = "magicalities:cauldron",
-	description = "Cauldron",
-	default = true
 })

@@ -50,5 +50,8 @@ dofile(modpath.."/cauldron.lua")
 -- Book
 dofile(modpath.."/book.lua")
 
+-- Map generation
+dofile(modpath.."/mapgen.lua")
+
 -- Register
 dofile(modpath.."/register.lua")

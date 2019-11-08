@@ -1,0 +1,6 @@
+
+# Setting this to true will prevent Magicalities' structures from being placed in the world
+mgc_skip_structures (Skip generating Magicalities structures) bool false
+
+# Enable Magicalities' particle effects
+mgc_particles (Magicalities particle effects) bool true

@@ -1,7 +1,7 @@
 
 magicalities.researching = {}
 
-local function genlist(list, x, y, w, h, index, canlearn)
+function magicalities.researching.generate_formspec_list(list, x, y, w, h, index, canlearn, canopen)
 	local i = ""
 	if #list == 0 then return "" end
 	local ty = 0
@@ -9,7 +9,7 @@ local function genlist(list, x, y, w, h, index, canlearn)
 	local visualtotal = math.ceil(y + h)
 	local reallist = {}
 
-	for i = index * visualtotal, visualtotal do
+	for i = index * visualtotal, (index * visualtotal) + visualtotal do
 		if list[i + 1] then
 			table.insert(reallist, list[i + 1])
 		end
@@ -18,6 +18,12 @@ local function genlist(list, x, y, w, h, index, canlearn)
 	for _,v in pairs(reallist) do
 		if ty + 1 > visualtotal then break end
 		local icon = ""
+		local t = 1
+		if v.type == "recipe" then t = 2 end
+
+		if canopen then
+			i = i .. "button["..x..","..(y+ty)..";"..w..",1;#"..t..""..v.name..";]"
+		end
 
 		if v.icon ~= nil then
 			icon = "image["..x..","..(y+ty)..";1,1;"..v.icon.."]"
@@ -27,8 +33,6 @@ local function genlist(list, x, y, w, h, index, canlearn)
 
 		i = i .. icon .. "label["..(x + 1)..","..(y+ty)..";"..v.description.."]"
 		if canlearn then
-			local t = 1
-			if v.type == "recipe" then t = 2 end
 			i = i .. "button["..(x+w-1)..","..(y+ty)..";1,1;@"..t..""..v.name..";Learn]"
 		end
 		ty = ty + 1
@@ -37,7 +41,7 @@ local function genlist(list, x, y, w, h, index, canlearn)
 	if index > 0 then
 		i = i .. "button["..(x+w)..","..y..";1,1;up;Up]"
 	elseif total > visualtotal then
-		i = i .. "button["..(x+w)..","..(y+h)..";1,1;dn;Down]"
+		i = i .. "button["..(x+w)..","..(y+h-0.25)..";1,1;dn;Down]"
 	end
 
 	return i
@@ -60,7 +64,7 @@ local function table_formspec(player, research, index, canlearn)
 		"list[context;tools;0.5,1.5;1,1;]"..
 		"image[0.5,2.5;1,1;magicalities_gui_paper_slot.png]"..
 		"list[context;paper;0.5,2.5;3,3;]"..
-		genlist(list, 1.5, 0.5, 5.5, 2, index, canlearn)..
+		magicalities.researching.generate_formspec_list(list, 1.5, 0.5, 5.5, 2, index, canlearn)..
 		"list[current_player;main;0,4.25;8,1;]"..
 		"list[current_player;main;0,5.5;8,3;8]"..
 		"listring[current_player;main]"..
@@ -254,6 +258,7 @@ end
 
 -- Base Table Override
 minetest.override_item("magicalities:table", {
+	description = "Research Table",
 	on_construct = function (pos)
 		local meta = minetest.get_meta(pos)
 		local inv = meta:get_inventory()

@@ -11,6 +11,11 @@ minetest.register_node("magicalities:tree_enchanted", {
 	on_place = minetest.rotate_node
 })
 
+-- circumvent a weird issue
+local function add_fix(inv, item)
+	inv:add_item("main", item)
+end
+
 -- Researchable bookshelf
 -- Supposed to be a generated node that gives Research Notes
 minetest.register_node("magicalities:bookshelf", {
@@ -48,8 +53,7 @@ minetest.register_node("magicalities:bookshelf", {
 
 		local inv = clicker:get_inventory()
 		if inv:room_for_item("main", item) then
-			-- idk
-			inv:add_item("main", item)
+			minetest.after(0.1, add_fix, inv, item)
 		else
 			minetest.item_drop(item, clicker, clicker:get_pos())
 		end

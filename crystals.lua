@@ -86,7 +86,8 @@ local function update_contents(pos, contents)
 end
 
 local function crystal_rightclick(pos, node, clicker, itemstack, pointed_thing)
-	local meta   = minetest.get_meta(pos)
+	local player = clicker:get_player_name()
+	local meta = minetest.get_meta(pos)
 
 	-- Add contents to the crystal
 	local contents = minetest.deserialize(meta:get_string("contents"))
@@ -100,13 +101,19 @@ local function crystal_rightclick(pos, node, clicker, itemstack, pointed_thing)
 		return itemstack
 	end
 
+	-- Check if the player knows anything about the Element Ring, if not, surprise them!
+	local element_ring = magicalities.player_has_recipe(player, "magicalities:element_ring")
+	if not element_ring then
+		magicalities.player_learn(player, "magicalities:element_ring", true)
+	end
+
 	-- Check if player can preserve this crystal
-	local preserve = magicalities.player_has_ability(clicker:get_player_name(), "magicalities:crystal_preserve")
+	local preserve = magicalities.player_has_ability(player, "magicalities:crystal_preserve")
 	local mincheck = 0
 	if preserve then mincheck = 1 end
 
 	-- Check if we can take more than one
-	local draining = magicalities.player_has_ability(clicker:get_player_name(), "magicalities:crystal_draining")
+	local draining = magicalities.player_has_ability(player, "magicalities:crystal_draining")
 	local maxtake = 1
 	if draining then maxtake = 5 end
 
@@ -124,12 +131,16 @@ local function crystal_rightclick(pos, node, clicker, itemstack, pointed_thing)
 		end
 	end
 
+	local done_did = 0
 	local can_put = magicalities.wands.wand_insertable_contents(itemstack, one_of_each)
 	for name, count in pairs(can_put) do
 		if count > 0 then
+			done_did = done_did + count
 			contents[name][1] = contents[name][1] - count
 		end
 	end
+
+	if done_did == 0 then return itemstack end
 
 	-- Take - Particles
 	local cpls = clicker:get_pos()

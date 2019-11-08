@@ -236,8 +236,10 @@ function magicalities.wands.wand_insertable_contents(stack, to_put)
 
 	for name, count in pairs(to_put) do
 		if data_table[name] then
-			if data_table[name] + count < cap + 1 then
+			if data_table[name] + count <= cap then
 				insertable[name] = count
+			elseif cap - data_table[name] > 0 then
+				insertable[name] = cap - data_table[name]
 			end
 		end
 	end
