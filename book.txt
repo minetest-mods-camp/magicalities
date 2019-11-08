@@ -35,12 +35,22 @@ The <b>Transterra</b> is a stone that can be used to <b>create or remove nodes f
 <center><item name="default:stone" width=64 height=64><img name=magicalities_book_plus.png width=64 height=64><item name="default:dirt" width=64 height=64><img name=magicalities_book_plus.png width=64 height=64><item name="magicalities:crystal_fire" width=64 height=64></center>
 <center><img name=gui_furnace_arrow_bg.png^\[transformFY width=64 height=64></center>
 <center><item name="magicalities:cauldron_with_water" width=64 height=64><img name=magicalities_book_plus.png width=64 height=64><item name="magicalities:wand_steel" width=64 height=64></center>
+<center><big>1 Earth | 1 Dark</big></center>
 #2magicalities:tellium
 <b>Tellium</b> is a metal that can be used to <b>create magical tools</b>. It is made in the Cauldron.
 <center><item name="default:steel_ingot" width=64 height=64><img name=magicalities_book_plus.png width=64 height=64><item name="default:obsidian" width=64 height=64></center>
 <center><img name=gui_furnace_arrow_bg.png^\[transformFY width=64 height=64></center>
 <center><item name="magicalities:cauldron_with_water" width=64 height=64><img name=magicalities_book_plus.png width=64 height=64><item name="magicalities:wand_steel" width=64 height=64></center>
+<center><big>5 Fire | 5 Earth</big></center>
 #2magicalities:element_ring
 The <b>Elemental Ring</b> can show you what elements a crystal contains and their quantities.
 #2magicalities:focus_blank
 The <b>Blank Wand Focus</b> is your gateway to the world of <b>Wand Focuses</b>.
+#2magicalities:axe_tellium
+<b>Tellium Axe</b> is a Diamond-tier tool that can be empowered by right-clicking. In empowered mode, the axe is 2x as fast but breaks about 4x faster.
+#2magicalities:pick_tellium
+<b>Tellium Pickaxe</b> is a Diamond-tier tool that can be empowered by right-clicking. In empowered mode, the pickaxe is 2x as fast but breaks about 4x faster.
+#2magicalities:shovel_tellium
+<b>Tellium Shovel</b> is a Diamond-tier tool that can be empowered by right-clicking. In empowered mode, the shovel is 2x as fast but breaks about 4x faster.
+#2magicalities:sword_tellium
+<b>Tellium Sword</b> is a Diamond-tier tool that can be empowered by right-clicking. In empowered mode, the sword deals 2x more damage but breaks about 4x faster.

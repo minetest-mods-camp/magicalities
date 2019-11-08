@@ -41,6 +41,9 @@ dofile(modpath.."/nodes.lua")
 -- Items
 dofile(modpath.."/craftitems.lua")
 
+-- Tools
+dofile(modpath.."/tools.lua")
+
 -- Scanner
 dofile(modpath.."/scanner.lua")
 

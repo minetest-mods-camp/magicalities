@@ -191,6 +191,72 @@ local recipes = {
 		learnable = {
 			depends = {"magicalities:focus_blank"}
 		}
+	},
+	{
+		input = {
+			{"magicalities:tellium", "magicalities:tellium", ""},
+			{"magicalities:tellium", "magicalities:transterra", ""},
+			{"", "default:stick", ""}
+		},
+		output = "magicalities:axe_tellium",
+		requirements = {
+			["air"] = 45,
+			["light"] = 45,
+			["earth"] = 15
+		},
+		learnable = {
+			depends = {"magicalities:tellium", "magicalities:transterra", "magicalities:wand_gold"}
+		}
+	},
+	{
+		input = {
+			{"magicalities:tellium", "magicalities:tellium", "magicalities:tellium"},
+			{"", "magicalities:transterra", ""},
+			{"", "default:stick", ""}
+		},
+		output = "magicalities:pick_tellium",
+		requirements = {
+			["air"] = 45,
+			["light"] = 15,
+			["earth"] = 45
+		},
+		learnable = {
+			depends = {"magicalities:tellium", "magicalities:transterra", "magicalities:wand_gold"}
+		}
+	},
+	{
+		input = {
+			{"magicalities:tellium"},
+			{"magicalities:transterra"},
+			{"default:stick"}
+		},
+		output = "magicalities:shovel_tellium",
+		requirements = {
+			["air"] = 45,
+			["dark"] = 15,
+			["earth"] = 45
+		},
+		learnable = {
+			depends = {"magicalities:tellium", "magicalities:transterra", "magicalities:wand_gold"}
+		}
+	},
+	{
+		input = {
+			{"magicalities:tellium"},
+			{"magicalities:transterra"},
+			{"default:stick"}
+		},
+		output = "magicalities:sword_tellium",
+		requirements = {
+			["air"] = 45,
+			["dark"] = 45,
+			["light"] = 45,
+			["earth"] = 45,
+			["fire"] = 15
+		},
+		learnable = {
+			depends = {"magicalities:tellium", "magicalities:transterra", "magicalities:wand_gold"}
+		}
 	}
 }
 

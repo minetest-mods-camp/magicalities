@@ -8,6 +8,7 @@ function magicalities.researching.generate_formspec_list(list, x, y, w, h, index
 	local total = #list
 	local visualtotal = math.ceil(y + h)
 	local reallist = {}
+	local pages = math.ceil(total / visualtotal)
 
 	for i = index * visualtotal, (index * visualtotal) + visualtotal do
 		if list[i + 1] then
@@ -40,7 +41,9 @@ function magicalities.researching.generate_formspec_list(list, x, y, w, h, index
 
 	if index > 0 then
 		i = i .. "button["..(x+w)..","..y..";1,1;up;Up]"
-	elseif total > visualtotal then
+	end
+
+	if pages > index + 1 then
 		i = i .. "button["..(x+w)..","..(y+h-0.25)..";1,1;dn;Down]"
 	end
 
