@@ -361,8 +361,23 @@ end
 -- Abilities
 
 magicalities.register_ability_learnable({
+	name = "magicalities:crystal_preserve",
+	description = "Crystal Preservation\nAvoid collecting every last drop of elements",
+	icon = "magicalities_crystal_preservation.png"
+})
+
+magicalities.register_ability_learnable({
+	name = "magicalities:crystal_draining",
+	description = "Efficient Crystal Draining\nIncrease element drain rate",
+	depends = {"magicalities:crystal_preserve"},
+	icon = "magicalities_crystal_draining.png"
+})
+
+magicalities.register_ability_learnable({
 	name = "magicalities:pickup_jarred",
-	description = "Crystal Jarring"
+	description = "Crystal Jarring\nPick up intact crystals using jarring",
+	depends = {"magicalities:crystal_preserve"},
+	icon = "magicalities_jarred.png"
 })
 
 magicalities.register_recipe_learnable({

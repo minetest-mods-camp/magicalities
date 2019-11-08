@@ -57,7 +57,7 @@ minetest.register_craftitem("magicalities:tellium", {
 })
 
 minetest.register_craftitem("magicalities:transterra", {
-	description = "Transterra",
+	description = "Transterra\nThis substance can change the world!",
 	inventory_image = "magicalities_red_stone.png",
 	groups = {shard = 1, transterra = 1}
 })

@@ -71,6 +71,20 @@ function magicalities.crystals.generate_crystal_buffer(pos)
 	return final
 end
 
+-- If content goes to zero, remove element from crystal
+local function update_contents(pos, contents)
+	local meta = minetest.get_meta(pos)
+	local keep = {}
+
+	for name,data in pairs(contents) do
+		if data[1] > 0 then
+			keep[name] = data
+		end
+	end
+
+	meta:set_string("contents", minetest.serialize(keep))
+end
+
 local function crystal_rightclick(pos, node, clicker, itemstack, pointed_thing)
 	local meta   = minetest.get_meta(pos)
 
@@ -86,10 +100,27 @@ local function crystal_rightclick(pos, node, clicker, itemstack, pointed_thing)
 		return itemstack
 	end
 
+	-- Check if player can preserve this crystal
+	local preserve = magicalities.player_has_ability(clicker:get_player_name(), "magicalities:crystal_preserve")
+	local mincheck = 0
+	if preserve then mincheck = 1 end
+
+	-- Check if we can take more than one
+	local draining = magicalities.player_has_ability(clicker:get_player_name(), "magicalities:crystal_draining")
+	local maxtake = 1
+	if draining then maxtake = 5 end
+
 	local one_of_each = {}
 	for name, count in pairs(contents) do
-		if count[1] > 0 then
-			one_of_each[name] = 1
+		if count[1] > mincheck then
+			local take = maxtake
+			if count[1] <= maxtake then
+				take = count[1] - mincheck
+			end
+
+			if take > 0 then
+				one_of_each[name] = take
+			end
 		end
 	end
 
@@ -126,7 +157,7 @@ local function crystal_rightclick(pos, node, clicker, itemstack, pointed_thing)
 
 	itemstack = magicalities.wands.wand_insert_contents(itemstack, can_put)
 	magicalities.wands.update_wand_desc(itemstack)
-	meta:set_string("contents", minetest.serialize(contents))
+	update_contents(pos, contents)
 
 	return itemstack
 end
