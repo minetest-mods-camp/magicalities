@@ -80,14 +80,14 @@ function magicalities.arcane.register_recipe(data)
 				recipe_data.name = data.output
 			end
 			data.learnable = recipe_data.name
+		end
+
+		if not data.description then
+			local itm = minetest.registered_items[data.output]
+			recipe_data.description = itm.description
 		else
-			if not data.description then
-				local itm = minetest.registered_items[data.output]
-				recipe_data.description = itm.description
-			else
-				recipe_data.description = data.description .. ""
-				data.description = nil
-			end
+			recipe_data.description = data.description .. ""
+			data.description = nil
 		end
 
 		magicalities.register_recipe_learnable(recipe_data)

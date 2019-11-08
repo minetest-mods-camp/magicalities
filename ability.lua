@@ -30,8 +30,8 @@ function magicalities.learn_meets_prerequisites(player_name, item, recipe)
 	if not a[item] then return false end
 	if a[item].depends then
 		local can = true
-		for v in pairs(a[item].depends) do
-			if not c(player, v) then
+		for _,v in pairs(a[item].depends) do
+			if not c(player_name, v) then
 				can = false
 				break
 			end
@@ -50,9 +50,11 @@ function magicalities.available_to_player(player_name, unlocked, researchable)
 	for name,data in pairs(abilities) do
 		local tc = table.copy(data)
 		tc.type = 'ability'
-		if magicalities.player_has_ability(player_name, name) and unlocked then
+		if magicalities.player_has_ability(player_name, name) then
 			tc.unlocked = true
-			table.insert(all, tc)
+			if unlocked then
+				table.insert(all, tc)
+			end
 		elseif magicalities.learn_meets_prerequisites(player_name, name) and researchable then
 			tc.unlocked = false
 			table.insert(all, tc)
@@ -63,9 +65,11 @@ function magicalities.available_to_player(player_name, unlocked, researchable)
 	for name,data in pairs(recipes) do
 		local tc = table.copy(data)
 		tc.type = 'recipe'
-		if magicalities.player_has_recipe(player_name, name) and unlocked then
+		if magicalities.player_has_recipe(player_name, name) then
 			tc.unlocked = true
-			table.insert(all, tc)
+			if unlocked then
+				table.insert(all, tc)
+			end
 		elseif magicalities.learn_meets_prerequisites(player_name, name, true) and researchable then
 			tc.unlocked = false
 			table.insert(all, tc)
@@ -76,7 +80,7 @@ function magicalities.available_to_player(player_name, unlocked, researchable)
 end
 
 -- Learn a recipe or an ability
-function magicalities.player_learn(player_name, item, recipe)
+function magicalities.player_learn(player_name, item, recipe, silent)
 	if not magicalities.data[player_name] then
 		magicalities.load_player_data(player_name)
 	end
@@ -88,24 +92,28 @@ function magicalities.player_learn(player_name, item, recipe)
 		local recipe_n = recipes[item]
 		if recipe_n then
 			recipe_n = recipe_n.description
+			table.insert(magicalities.data[player_name].recipes, item)
+			success = true
+			msgname = msgname .. recipe_n
 		end
-		table.insert(magicalities.data[player_name].recipes, item)
-		success = true
-		msgname = msgname .. recipe_n
 	elseif not recipe and not magicalities.player_has_ability(player_name, item) then
 		local ability_n = abilities[item]
 		if ability_n then
 			ability_n = ability_n.description
+			table.insert(magicalities.data[player_name].abilities, item)
+			success = true
+			msgname = "to " .. ability_n
 		end
-		table.insert(magicalities.data[player_name].abilities, item)
-		success = true
-		msgname = "to " .. ability_n
 	end
 
 	if success then
 		magicalities.save_player_data(player_name)
-		minetest.chat_send_player(player_name, "You have learned " .. msgname .. "!")
+		if not silent then
+			minetest.chat_send_player(player_name, "You have learned " .. msgname .. "!")
+		end
 	end
+
+	return success
 end
 
 -- Add/remove research points

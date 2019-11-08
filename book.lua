@@ -1,7 +1,6 @@
 
 local function book_formspec(user)
 	local avail_list = magicalities.available_to_player(user, true)
-	print(dump(avail_list))
 	return "size[5,6]"..
 		default.gui_bg..
 		default.gui_bg_img..
@@ -22,5 +21,6 @@ minetest.register_craftitem("magicalities:book", {
 	_wand_created = function (itemstack, wand, user, pos)
 		itemstack:get_meta():set_string("player", user:get_player_name())
 		return itemstack
-	end
+	end,
+	stack_max = 1
 })

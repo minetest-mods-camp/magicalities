@@ -273,6 +273,26 @@ minetest.register_craft({
 	output = "magicalities:cauldron",
 })
 
+if minetest.registered_items["mobs:chicken_feather"] then
+	minetest.register_craft({
+		recipe = {
+			{"mobs:chicken_feather"},
+			{"group:color_black"},
+			{"default:glass"}
+		},
+		output = "magicalities:ink_and_quill",
+	})
+else
+	minetest.register_craft({
+		recipe = {
+			{"group:color_white"},
+			{"group:color_black"},
+			{"default:glass"}
+		},
+		output = "magicalities:ink_and_quill",
+	})
+end
+
 local function _flatten(arr)
 	local result = {}
 	for i,v in ipairs(arr) do
@@ -342,7 +362,7 @@ end
 
 magicalities.register_ability_learnable({
 	name = "magicalities:pickup_jarred",
-	description = "pick up crystals using jars"
+	description = "Crystal Jarring"
 })
 
 magicalities.register_recipe_learnable({
