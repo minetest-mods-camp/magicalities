@@ -79,7 +79,6 @@ function magicalities.arcane.register_recipe(data)
 			if not recipe_data.name then
 				recipe_data.name = data.output
 			end
-			data.learnable = recipe_data.name
 		end
 
 		if not data.description then
@@ -90,6 +89,7 @@ function magicalities.arcane.register_recipe(data)
 			data.description = nil
 		end
 
+		data.learnable = recipe_data.name
 		magicalities.register_recipe_learnable(recipe_data)
 	end
 
@@ -252,7 +252,7 @@ local function update_craft(pos)
 	-- Make sure wand is inserted
 	-- Check if the recipe has been learned by the player
 	local wand = inv:get_stack("wand", 1)
-	if not recipe or wand:is_empty() and 
+	if not recipe or wand:is_empty() or
 		(recipe.learnable ~= nil and not magicalities.player_has_recipe(magicalities.wands.get_wand_owner(wand), recipe.learnable)) then
 		meta:set_string("formspec", arcane_table_formspec({}))
 		inv:set_list("craftres", {})
@@ -331,5 +331,6 @@ minetest.register_node("magicalities:table", {
 			{-0.5000, 0.3750, -0.5000, 0.5000, 0.5000, 0.5000}
 		}
 	},
+	sunlight_propagates = true,
 	groups = {choppy = 2, oddly_breakable_by_hand = 1, enchanted_table = 1}
 })

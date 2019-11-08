@@ -15,7 +15,6 @@ function magicalities.cauldron.register_recipe(data)
 			if not recipe_data.name then
 				recipe_data.name = data.output
 			end
-			data.learnable = recipe_data.name
 		end
 
 		if not recipe_data.description then
@@ -25,6 +24,7 @@ function magicalities.cauldron.register_recipe(data)
 			recipe_data.description = data.description .. ""
 		end
 
+		data.learnable = recipe_data.name
 		magicalities.register_recipe_learnable(recipe_data)
 	end
 
