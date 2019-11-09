@@ -35,18 +35,40 @@ local function book_read_page(book, user, page, ptype)
 		check = magicalities.player_has_recipe
 	end
 
-	if not check(uname, page) then return book end
+	if not check(uname, page) then return false end
 
 	local chapter = "#"..ptype..""..page
 	if not page_cache[chapter] then
-		return
+		return false
 	end
 
 	minetest.show_formspec(uname, "magicalities:book", book_formspec(uname, chapter, 0))
+	return true
 end
 
 local function book_read(book, user, pointed_thing)
 	local uname = user:get_player_name()
+	if pointed_thing and pointed_thing.type == "node" then
+		local pos = pointed_thing.under
+		local node = minetest.get_node(pos)
+		local ptype = 2
+		local page = node.name
+
+		-- Special case for crystals
+		if minetest.get_item_group(node.name, "crystal_cluster") > 0 then
+			ptype = 1
+			page = "magicalities:crystal"
+		end
+
+		-- Open a page instead
+		if page_cache["#"..ptype..""..page] then
+			local read = book_read_page(book, user, page, ptype)
+			if read then
+				return book
+			end
+		end
+	end
+
 	local meta = book:get_meta()
 	minetest.show_formspec(uname, "magicalities:book", book_formspec(uname, nil, meta:get_int("scrolli")))
 	return book
@@ -133,6 +155,7 @@ end)
 minetest.register_craftitem("magicalities:book", {
 	description = "Magicalities' Guide for Witches and Wizards",
 	inventory_image = "magicalities_book.png",
+	on_use = book_read,
 	on_place = book_read,
 	on_secondary_use = book_read,
 	_wand_created = function (itemstack, wand, user, pos)

@@ -44,7 +44,7 @@ function magicalities.researching.generate_formspec_list(list, x, y, w, h, index
 	end
 
 	if pages > index + 1 then
-		i = i .. "button["..(x+w)..","..(y+h-0.25)..";1,1;dn;Down]"
+		i = i .. "button["..(x+w)..","..(y+ty-1)..";1,1;dn;Down]"
 	end
 
 	return i

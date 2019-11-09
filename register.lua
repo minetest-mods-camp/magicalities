@@ -226,9 +226,9 @@ local recipes = {
 	},
 	{
 		input = {
-			{"magicalities:tellium"},
-			{"magicalities:transterra"},
-			{"default:stick"}
+			{"", "magicalities:tellium", ""},
+			{"", "magicalities:transterra", ""},
+			{"", "default:stick", ""}
 		},
 		output = "magicalities:shovel_tellium",
 		requirements = {
@@ -242,9 +242,9 @@ local recipes = {
 	},
 	{
 		input = {
-			{"magicalities:tellium"},
-			{"magicalities:transterra"},
-			{"default:stick"}
+			{"", "magicalities:tellium", ""},
+			{"", "magicalities:tellium", ""},
+			{"", "magicalities:transterra", ""}
 		},
 		output = "magicalities:sword_tellium",
 		requirements = {
@@ -428,6 +428,8 @@ end
 -- Treasurer mod, add Research Notes as a form of treasure.
 if minetest.get_modpath("treasurer") then
 	treasurer.register_treasure("magicalities:note", 0.35, 5, {1,3}, nil, "tool")
+	treasurer.register_treasure("magicalities:tellium", 0.8, 8, {1,3}, nil, "crafting_component")
+	treasurer.register_treasure("magicalities:transterra", 0.8, 5, {1,3}, nil, "crafting_component")
 end
 
 ---------------
@@ -439,13 +441,6 @@ end
 magicalities.register_recipe_learnable({
 	name = "magicalities:wand_steel",
 	description = "Wands",
-	default = true,
-})
-
-magicalities.register_ability_learnable({
-	name = "magicalities:crystal",
-	description = "Crystal Tapping\nExtract elements from crystals",
-	icon = "magicalities_crystal_gui.png",
 	default = true,
 })
 
@@ -467,10 +462,19 @@ magicalities.register_recipe_learnable({
 	default = true
 })
 
+-- Crystals
+
+magicalities.register_ability_learnable({
+	name = "magicalities:crystal",
+	description = "Crystal Tapping\nExtract elements from crystals",
+	icon = "magicalities_crystal_gui.png",
+})
+
 magicalities.register_ability_learnable({
 	name = "magicalities:crystal_preserve",
 	description = "Crystal Preservation\nAvoid collecting every last drop of elements",
-	icon = "magicalities_crystal_preservation.png"
+	icon = "magicalities_crystal_preservation.png",
+	depends = {"magicalities:crystal"}
 })
 
 magicalities.register_ability_learnable({

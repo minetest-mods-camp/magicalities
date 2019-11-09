@@ -101,10 +101,10 @@ local function crystal_rightclick(pos, node, clicker, itemstack, pointed_thing)
 		return itemstack
 	end
 
-	-- Check if the player knows anything about the Element Ring, if not, surprise them!
-	local element_ring = magicalities.player_has_recipe(player, "magicalities:element_ring")
+	-- The player learned about crystal tapping
+	local element_ring = magicalities.player_has_recipe(player, "magicalities:crystal")
 	if not element_ring then
-		magicalities.player_learn(player, "magicalities:element_ring", true)
+		magicalities.player_learn(player, "magicalities:crystal")
 	end
 
 	-- Check if player can preserve this crystal

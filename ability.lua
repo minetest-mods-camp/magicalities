@@ -106,7 +106,7 @@ function magicalities.player_learn(player_name, item, recipe, silent)
 			ability_n = no_newline(ability_n.description)
 			table.insert(magicalities.data[player_name].abilities, item)
 			success = true
-			msgname = "to " .. ability_n
+			msgname = ability_n
 		end
 	end
 
