@@ -1,5 +1,84 @@
 
 local page_cache = {}
+local recipe_cache = {}
+local group_cache = {}
+
+local function resolve_group(group)
+	if group_cache[group] then return group_cache[group] end
+	local remove_group = group:sub(7)
+	local found
+	for v in pairs(minetest.registered_items) do
+		if minetest.get_item_group(v, remove_group) > 0 then
+			found = v
+			break
+		end
+	end
+	if not found then return "" end
+	group_cache[group] = found
+	return found
+end
+
+local function fromtable_output(tbl, out)
+	local res
+	for _,v in pairs(tbl) do
+		if v.output == out then
+			res = v
+			break
+		end
+	end
+	return res
+end
+
+local function generate_recipe_hypertext(item, recipe_type)
+	if recipe_cache[recipe_type .. "/" .. item] then return recipe_cache[recipe_type .. "/" .. item] end
+
+	local lines = {}
+
+	if recipe_type == 'cauldron' then
+		local x = fromtable_output(magicalities.cauldron.recipes, item)
+		if not x then return "" end
+		local rec = x.requirements
+		local y = {}
+
+		for _,v in pairs(x.items) do
+			table.insert(y, "<item name=\""..v.."\" width=64 height=64>")
+		end
+
+		table.insert(lines, "<center>" .. table.concat(y, "<img name=magicalities_book_plus.png width=64 height=64>") .. "</center>")
+		table.insert(lines, "<center><img name=gui_furnace_arrow_bg.png^\\[transformFY width=64 height=64></center>")
+		table.insert(lines, "<center><item name=\"magicalities:cauldron_with_water\" width=64 height=64><img name=magicalities_book_plus.png width=64 height=64><item name=\"magicalities:wand_steel\" width=64 height=64></center>")
+
+		if rec then
+			local p = {}
+			for rec,v in pairs(rec) do
+				table.insert(p, v .. " " .. magicalities.elements[rec].description)
+			end
+			table.insert(lines, "<center><big>" .. table.concat(p, " | ") .. "</big></center>")
+		end
+	end
+
+	if #lines > 0 then
+		local ht = table.concat(lines, "\n")
+		recipe_cache[recipe_type .. "/" .. item] = ht
+		return ht
+	end
+end
+
+local function line_special (line)
+	local types = {"cauldron"}
+	local matched = false
+
+	for _,v in pairs(types) do
+		matched = line:match("^<"..v) ~= nil
+		if matched then break end
+	end
+
+	if not matched then return line end
+	local tyt = line:match("^<([%w]*)")
+	local itm = line:match("name=([^>]*)")
+	if not tyt or not itm then return "" end
+	return generate_recipe_hypertext(itm, tyt)
+end
 
 local function book_formspec(user, page, scrollindex)
 	if page then
@@ -75,6 +154,7 @@ local function book_read(book, user, pointed_thing)
 end
 
 local function cache_book_pages()
+	recipe_cache = {}
 	local file = io.open(minetest.get_modpath("magicalities").."/book.txt")
 	local all = {}
 	local previous = ""
@@ -86,6 +166,7 @@ local function cache_book_pages()
 			previous = line
 			since = 0
 		elseif previous ~= "" then
+			line = line_special(line)
 			if since > 0 then
 				line = '\n'..line
 			end
@@ -173,4 +254,9 @@ minetest.register_chatcommand("mgcbookcache", {
 	end
 })
 
-cache_book_pages()
+local initial = true
+minetest.register_on_joinplayer(function ()
+	if not initial then return end
+	initial = false
+	cache_book_pages()
+end)

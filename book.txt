@@ -32,16 +32,10 @@ Right-Click on the Cauldron with a <b>Bucket of Water</b> in order to fill it wi
 The <b>Gold-Capped Wand</b> is an improved version of the Steel-Capped Wand. It can contain up to 50 of each element instead of the Steel Wand's 25.
 #2magicalities:transterra
 The <b>Transterra</b> is a stone that can be used to <b>create or remove nodes from the world</b>. It is made in the Cauldron.
-<center><item name="default:stone" width=64 height=64><img name=magicalities_book_plus.png width=64 height=64><item name="default:dirt" width=64 height=64><img name=magicalities_book_plus.png width=64 height=64><item name="magicalities:crystal_fire" width=64 height=64></center>
-<center><img name=gui_furnace_arrow_bg.png^\[transformFY width=64 height=64></center>
-<center><item name="magicalities:cauldron_with_water" width=64 height=64><img name=magicalities_book_plus.png width=64 height=64><item name="magicalities:wand_steel" width=64 height=64></center>
-<center><big>1 Earth | 1 Dark</big></center>
+<cauldron name=magicalities:transterra>
 #2magicalities:tellium
 <b>Tellium</b> is a metal that can be used to <b>create magical tools</b>. It is made in the Cauldron.
-<center><item name="default:steel_ingot" width=64 height=64><img name=magicalities_book_plus.png width=64 height=64><item name="default:obsidian" width=64 height=64></center>
-<center><img name=gui_furnace_arrow_bg.png^\[transformFY width=64 height=64></center>
-<center><item name="magicalities:cauldron_with_water" width=64 height=64><img name=magicalities_book_plus.png width=64 height=64><item name="magicalities:wand_steel" width=64 height=64></center>
-<center><big>5 Fire | 5 Earth</big></center>
+<cauldron name=magicalities:tellium>
 #2magicalities:element_ring
 The <b>Elemental Ring</b> can show you what elements a crystal contains and their quantities.
 #2magicalities:focus_blank

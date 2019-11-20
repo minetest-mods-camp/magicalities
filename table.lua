@@ -1,6 +1,5 @@
 
-magicalities.arcane = {}
-magicalities.arcane.recipes = {}
+magicalities.arcane = { recipes = {} }
 
 local fmspecelems = {
 	["earth"] = {2.98, 0.15},

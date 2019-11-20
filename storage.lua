@@ -15,18 +15,20 @@ local storage = minetest.get_mod_storage()
 -- Memory cache
 magicalities.data = {}
 
+local data_default = {
+	recipes = {},
+	abilities = {},
+	protect = {},
+	research = 0,
+}
+
 -- Storage actions
 
 function magicalities.load_player_data(player_name)
 	local stdata = minetest.deserialize(storage:get_string(player_name))
 
 	if not stdata then
-		magicalities.data[player_name] = {
-			recipes = {},
-			abilities = {},
-			protect = {},
-			research = 0,
-		}
+		magicalities.data[player_name] = table.copy(data_default)
 		return
 	end
 
@@ -52,6 +54,22 @@ function magicalities.save_all_data()
 end
 
 -- System Actions
+
+minetest.register_chatcommand("mgcstoragereset", {
+	func = function (name, params)
+		magicalities.data[name] = table.copy(data_default)
+		magicalities.save_player_data(name)
+		return true, "Deleted player storage successfully."
+	end
+})
+
+minetest.register_chatcommand("mgcstoragesave", {
+	privs = {basic_privs = 1},
+	func = function (name, params)
+		magicalities.save_all_data()
+		return true, "Saved all magicalities data."
+	end
+})
 
 minetest.register_on_shutdown(magicalities.save_all_data)
 

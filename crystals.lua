@@ -89,6 +89,11 @@ local function crystal_rightclick(pos, node, clicker, itemstack, pointed_thing)
 	local player = clicker:get_player_name()
 	local meta = minetest.get_meta(pos)
 
+	-- Protect crystals
+	if minetest.is_protected(pos, player) then
+		return itemstack
+	end
+
 	-- Add contents to the crystal
 	local contents = minetest.deserialize(meta:get_string("contents"))
 	if not contents then
