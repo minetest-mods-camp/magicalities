@@ -299,8 +299,9 @@ end
 
 minetest.register_craft({
 	recipe = {
-		{"default:steel_ingot", "default:steel_ingot", "default:steel_ingot"},
-		{"default:steel_ingot", "",                    "default:steel_ingot"},
+		{"default:steel_ingot",     "default:steel_ingot", "default:steel_ingot"},
+		{"", "default:steel_ingot", "default:steel_ingot"},
+		{"", "",                    "default:steel_ingot"},
 	},
 	output = "magicalities:cap_steel",
 })
