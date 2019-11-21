@@ -324,6 +324,8 @@ minetest.register_abm({
 				count = count + 1
 			end
 
+			if count == 0 then return end
+
 			local mcnt    = randbuff:next(1, count)
 			local cnt     = 0
 			for name, data in pairs(contents) do
