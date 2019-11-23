@@ -1,6 +1,4 @@
 
-local _fldlib = minetest.get_modpath("fluid_lib") ~= nil
-
 magicalities.cauldron = { recipes = {} }
 
 function magicalities.cauldron.register_recipe(data)
@@ -134,7 +132,7 @@ local _clddef = {
 	end,
 	on_rightclick = function(pos, node, clicker, itemstack, pointed_thing)
 		if node.name ~= "magicalities:cauldron" then return itemstack end
-		if itemstack:get_name() == "bucket:bucket_water" and not _fldlib then
+		if itemstack:get_name() == "bucket:bucket_water" then
 			node.name = "magicalities:cauldron_with_water"
 			minetest.swap_node(pos, node)
 			return ItemStack("bucket:bucket_empty")
