@@ -26,6 +26,13 @@ magicalities.wands.register_wand("gold", {
 	wand_cap    = 50,
 })
 
+-- Tellium
+magicalities.wands.register_wand("tellium", {
+	description = "Tellium-Capped Wand",
+	image       = "magicalities_wand_tellium.png",
+	wand_cap    = 100,
+})
+
 -----------------------------
 -- Arcane crafting recipes --
 -----------------------------
@@ -67,6 +74,25 @@ local recipes = {
 	},
 	{
 		input = {
+			{"",                     "magicalities:focus_atk_earth", "magicalities:cap_tellium"},
+			{"magicalities:tellium", "magicalities:wand_core",       "magicalities:focus_atk_water"},
+			{"group:crystal",        "magicalities:tellium",         ""}
+		},
+		output = "magicalities:wand_tellium",
+		requirements = {
+			["water"] = 50,
+			["earth"] = 50,
+			["light"] = 50,
+			["fire"]  = 50,
+			["dark"]  = 50,
+			["air"]   = 50,
+		},
+		learnable = {
+			depends = {"magicalities:wand_gold", "magicalities:focus_atk_earth", "magicalities:focus_atk_water"}
+		}
+	},
+	{
+		input = {
 			{"default:gold_ingot", "default:gold_ingot", "default:gold_ingot"},
 			{"default:gold_ingot", "",                   "default:gold_ingot"},
 		},
@@ -75,6 +101,18 @@ local recipes = {
 			["earth"] = 5,
 			["light"] = 5,
 			["dark"]  = 5,
+		}
+	},
+	{
+		input = {
+			{"magicalities:tellium", "magicalities:tellium", "magicalities:tellium"},
+			{"magicalities:tellium", "",                   "magicalities:tellium"},
+		},
+		output = "magicalities:cap_tellium",
+		requirements = {
+			["earth"] = 25,
+			["light"] = 25,
+			["dark"]  = 25,
 		}
 	},
 	{

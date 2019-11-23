@@ -45,6 +45,11 @@ minetest.register_craftitem("magicalities:cap_gold", {
 	inventory_image = "magicalities_cap_gold.png"
 })
 
+minetest.register_craftitem("magicalities:cap_tellium", {
+	description = "Tellium Wand Cap",
+	inventory_image = "magicalities_cap_tellium.png"
+})
+
 minetest.register_craftitem("magicalities:focus_blank", {
 	description = "Blank Wand Focus",
 	inventory_image = "magicalities_focus_base.png",

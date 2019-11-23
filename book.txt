@@ -29,7 +29,9 @@ Right-Click on the Cauldron with a <b>Bucket of Water</b> in order to fill it wi
 #2magicalities:wand_steel
 <b>Wands</b> are used to cast spells. The first wand you know of is called the <b>Steel-Capped Wand</b>, which can contain up to 25 of any element.
 #2magicalities:wand_gold
-The <b>Gold-Capped Wand</b> is an improved version of the Steel-Capped Wand. It can contain up to 50 of each element instead of the Steel Wand's 25.
+The <b>Gold-Capped Wand</b> is an improved version of the Steel-Capped Wand. It can contain up to 50 of each element instead of the Steel-Capped Wand's 25.
+#2magicalities:wand_tellium
+The <b>Tellium-Capped Wand</b> is the best wand available to wizards and witches. It can contain <b>up to 100</b> of each element instead of the Gold-Capped Wand's 50.
 #2magicalities:transterra
 The <b>Transterra</b> is a stone that can be used to <b>create or remove nodes from the world</b>. It is made in the Cauldron.
 <cauldron name=magicalities:transterra>
