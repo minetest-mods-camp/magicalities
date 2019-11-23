@@ -233,14 +233,19 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	return true
 end)
 
+local mgww = "Magicalities' Guide for Witches and Wizards"
 minetest.register_craftitem("magicalities:book", {
-	description = "Magicalities' Guide for Witches and Wizards",
+	description = mgww,
 	inventory_image = "magicalities_book.png",
 	on_use = book_read,
 	on_place = book_read,
 	on_secondary_use = book_read,
 	_wand_created = function (itemstack, wand, user, pos)
-		itemstack:get_meta():set_string("player", user:get_player_name())
+		local meta = itemstack:get_meta()
+		local name = user:get_player_name()
+		meta:set_string("player", name)
+		meta:set_string("description", mgww .. "\n" ..
+			minetest.colorize("#d33b57", string.format("Soulbound to %s", name)))
 		return itemstack
 	end,
 	stack_max = 1

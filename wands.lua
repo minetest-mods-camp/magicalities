@@ -165,6 +165,11 @@ function magicalities.wands.update_wand_desc(stack)
 		strbld = strbld .. "\n" .. table.concat(elems, "\n")
 	end
 
+	local owner = meta:get_string("player")
+	if owner ~= "" then
+		strbld = strbld .. "\n" .. minetest.colorize("#d33b57", string.format("Soulbound to %s", owner))
+	end
+
 	meta:set_string("description", strbld)
 end
 
