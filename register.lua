@@ -227,6 +227,20 @@ local recipes = {
 			["air"] = 10,
 		},
 		learnable = {
+			depends = {"magicalities:focus_atk_air"}
+		}
+	},
+	{
+		input = {
+			{"magicalities:crystal_light", "magicalities:crystal_block_light", "magicalities:crystal_light"},
+			{"default:stone",              "magicalities:focus_blank",         "default:stone"},
+			{"magicalities:crystal_light", "magicalities:crystal_block_light", "magicalities:crystal_light"}
+		},
+		output = "magicalities:focus_light",
+		requirements = {
+			["light"] = 10,
+		},
+		learnable = {
 			depends = {"magicalities:focus_blank"}
 		}
 	},

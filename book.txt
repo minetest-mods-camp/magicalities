@@ -42,6 +42,11 @@ The <b>Transterra</b> is a stone that can be used to <b>create or remove nodes f
 The <b>Elemental Ring</b> can show you what elements a crystal contains and their quantities.
 #2magicalities:focus_blank
 The <b>Blank Wand Focus</b> is your gateway to the world of <b>Wand Focuses</b>.
+Wand Focuses are used with the wand to peform magical activites. <b>Right Click</b> with your <action name="#2magicalities:wand_steel">Wand</action> to select a focus from your inventory.
+#2magicalities:focus_swap
+The <b>Wand Focus of Swapping</b> is a <action name="#2magicalities:focus_blank">Wand Focus</action> which can be used to replace nodes in the world with nodes in your inventory. Use <b>Right Mouse Button</b> to select the node to replace with and <b>Left Mouse Button</b> to replace nodes in the world. Each operation requires <b>1 Earth</b>.
+#2magicalities:focus_light
+The <b>Wand Focus of Light</b> is a <action name="#2magicalities:focus_blank">Wand Focus</action> which can be used to place light source nodes in place of stone. Each node of light takes <b>1 Light</b> element.
 #2magicalities:axe_tellium
 <b>Tellium Axe</b> is a Diamond-tier tool that can be empowered by right-clicking. In empowered mode, the axe is 2x as fast but breaks about 4x faster.
 #2magicalities:pick_tellium

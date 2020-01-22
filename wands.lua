@@ -196,7 +196,7 @@ function magicalities.wands.wand_take_contents(stack, to_take)
 
 	for name, count in pairs(to_take) do
 		if not data_table[name] or data_table[name] - count < 0 then
-			return nil
+			return stack
 		end
 
 		data_table[name] = data_table[name] - count
@@ -300,10 +300,11 @@ end
 
 local function use_wand(itemstack, user, pointed_thing)
 	local imeta = itemstack:get_meta()
+	local pname = user:get_player_name()
 
 	-- Initialize wand metadata
 	if imeta:get_string("contents") == "" then
-		initialize_wand(itemstack, user:get_player_name())
+		initialize_wand(itemstack, pname)
 		magicalities.wands.update_wand_desc(itemstack)
 	end
 
@@ -325,7 +326,8 @@ local function use_wand(itemstack, user, pointed_thing)
 	local pos = pointed_thing.under
 	local node = minetest.get_node_or_nil(pos)
 
-	if not node or node.name == "air" or minetest.is_protected(pos, user:get_player_name()) then
+	if not node or node.name == "air" or minetest.is_protected(pos, pname) then
+		minetest.record_protection_violation(pos, pname)
 		magicalities.wands.update_wand_desc(itemstack)
 		return itemstack
 	end

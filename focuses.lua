@@ -72,6 +72,7 @@ minetest.register_craftitem("magicalities:focus_swap", {
 		local pos = pointed_thing.under
 
 		if minetest.is_protected(pos, pname) then
+			minetest.record_protection_violation(pos, pname)
 			return itemstack
 		end
 
@@ -127,6 +128,48 @@ minetest.register_craftitem("magicalities:focus_swap", {
 
 		return itemstack
 	end
+})
+
+-- Light Source
+minetest.register_node("magicalities:light_source", {
+	description = "Magical Light Source",
+	tiles = {"magicalities_light_source.png"},
+	groups = {cracky = 3, not_in_creative_inventory = 1},
+	light_source = 13,
+	drop = ""
+})
+
+minetest.register_craftitem("magicalities:focus_light", {
+	description = "Wand Focus of Light",
+	groups = {wand_focus = 1},
+	inventory_image = "magicalities_focus_light.png",
+	stack_max = 1,
+	_wand_requirements = {
+		["light"] = 1
+	},
+	_wand_use = function(itemstack, user, pointed_thing)
+		if pointed_thing.type ~= "node" then
+			return
+		end
+
+		local pos = pointed_thing.under
+		local pname = user:get_player_name()
+
+		if minetest.is_protected(pos, pname) then
+			minetest.record_protection_violation(pos, pname)
+			return
+		end
+
+		local node = minetest.get_node(pos).name
+
+		if node == "default:stone" or node == "default:desert_stone" then
+			minetest.swap_node(pos, {name = "magicalities:light_source"})
+			itemstack = magicalities.wands.wand_take_contents(itemstack, {light = 1})
+			magicalities.wands.update_wand_desc(itemstack)
+		end
+
+		return itemstack
+	end,
 })
 
 ---------------
